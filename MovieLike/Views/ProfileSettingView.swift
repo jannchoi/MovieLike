@@ -45,13 +45,12 @@ class ProfileSettingView: BaseView {
         }
     }
     override func configureView() {
-        profileImageButton.setImage(UIImage(named: "profile_\(Int.random(in: 0...11))"), for: .normal)
-        
         nicknameTextField.borderStyle = .none
                 descriptionLabel.labelDesign(inputText: "2글자 이상 10글자 미만으로 설정해주세요", size: 10, color: .MyBlue)
         
         
-        finishButton.setAttributedTitle(NSAttributedString(string: "완료", attributes: [NSAttributedString.Key.foregroundColor : UIColor.MyBlue.cgColor, NSAttributedString.Key.font : UIFont.systemFont(ofSize: 17, weight: .bold)]), for: .normal)
+
+        finishButton.setButtonTitle(title: "완료", color: UIColor.MyBlue.cgColor, size: 17, weight: .bold)
         finishButton.backgroundColor = .black
 
     }

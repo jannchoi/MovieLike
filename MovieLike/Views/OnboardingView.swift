@@ -47,8 +47,8 @@ class OnboardingView: BaseView {
         mainImageView.image = UIImage(named: "onboarding")
         onboardingLabel.labelDesign(inputText: "Onboarding", size: 27,weight: .bold, color: .white, alignment: .center)
         descriptionLabel.labelDesign(inputText: "당신만의 영화 세상, MovieLike를 시작해보세요.", size: 17, color: .white, alignment: .center)
-        
-        startButton.setAttributedTitle(NSAttributedString(string: "사작하기", attributes: [NSAttributedString.Key.foregroundColor : UIColor.MyBlue.cgColor, NSAttributedString.Key.font : UIFont.systemFont(ofSize: 17, weight: .bold)]), for: .normal)
+
+        startButton.setButtonTitle(title: "시작하기", color: UIColor.MyBlue.cgColor, size: 17, weight: .bold)
         startButton.backgroundColor = .black
         startButton.clipsToBounds = true
         startButton.layer.borderWidth = 1
