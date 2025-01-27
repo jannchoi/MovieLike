@@ -36,6 +36,14 @@ class UserDefaultsManager {
             UserDefaults.standard.set(newValue, forKey: "signDate")
         }
     }
+    var like: Bool {
+        get {
+            UserDefaults.standard.bool(forKey: "like")
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "like")
+        }
+    }
     
     var info: [String] {
         get {

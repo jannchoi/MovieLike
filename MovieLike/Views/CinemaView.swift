@@ -24,19 +24,17 @@ class CinemaView: BaseView {
     
     func searchedWordsLayout() -> UICollectionViewLayout{
         let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        let sectionInset: CGFloat = 1
-        layout.itemSize = CGSize(width: 40, height: 21)
-        layout.sectionInset = UIEdgeInsets(top: 0, left: sectionInset, bottom: 0, right: sectionInset)
+        layout.minimumInteritemSpacing = 10
+        layout.minimumLineSpacing = 10
+        layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         return layout
     }
     func movieLayout() -> UICollectionViewLayout {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        let sectionInset: CGFloat = 1
-        let cellWidth = 150
-        layout.itemSize = CGSize(width: cellWidth, height: cellWidth / 7 * 5)
-        layout.sectionInset = UIEdgeInsets(top: 0, left: sectionInset, bottom: 0, right: sectionInset)
+        layout.minimumInteritemSpacing = 10
+        layout.minimumLineSpacing = 10
+        layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         return layout
     }
 
@@ -61,7 +59,7 @@ class CinemaView: BaseView {
         }
         profileImage.snp.makeConstraints { make in
             make.top.leading.equalToSuperview().inset(16)
-            make.size.equalTo(53)
+            make.size.equalTo(55)
         }
         nickname.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(16)
@@ -106,16 +104,17 @@ class CinemaView: BaseView {
             make.leading.equalTo(8)
         }
         movieCollection.snp.makeConstraints { make in
-            make.top.equalTo(movieLabel.snp.bottom).offset(4)
-            make.leading.equalTo(safeAreaLayoutGuide).offset(8)
+            make.top.equalTo(movieLabel.snp.bottom).offset(8)
+            make.leading.trailing.equalTo(safeAreaLayoutGuide).offset(8)
             make.bottom.equalTo(safeAreaLayoutGuide)
         }
     }
     override func configureView() {
+        backgroundColor = .black
         grayBackView.backgroundColor = .darkGray
 
-        nickname.labelDesign(inputText: "nickname", size: 20, weight : .bold, color: .white)
-        dateLabel.labelDesign(inputText: "25.01.01 가입", size: 10, color: .MylightGray)
+        nickname.labelDesign(inputText: "nickname", size: 16, weight : .bold, color: .white)
+        dateLabel.labelDesign(inputText: "25.01.01 가입", size: 12, color: .MylightGray)
         noSearchedWord.labelDesign(inputText: "최근 검색어 내역이 없습니다.", size: 13, color: .MyGray)
         angleBracket.image = UIImage(systemName: "chevron.right")
         angleBracket.tintColor = .MyGray
@@ -124,13 +123,15 @@ class CinemaView: BaseView {
         movieboxButton.setButtonTitle(title: "0 개의 무비박스 보관중", color: UIColor.white.cgColor, size: 17, weight: .bold)
         deleteButton.setButtonTitle(title: "전체 삭제", color: UIColor.MyBlue.cgColor, size: 14)
         
-        searchLabel.labelDesign(inputText: "최근검색어", size: 20, weight: .bold, color: .white)
-        movieLabel.labelDesign(inputText: "오늘의 영화", size: 20, weight: .bold, color: .white)
+        searchLabel.labelDesign(inputText: "최근검색어", size: 16, weight: .bold, color: .white)
+        movieLabel.labelDesign(inputText: "오늘의 영화", size: 16, weight: .bold, color: .white)
         
         searchedWords.tag = 0
         searchedWords.register(SearchWordsCollectionViewCell.self, forCellWithReuseIdentifier: SearchWordsCollectionViewCell.id)
+        searchedWords.backgroundColor = .black
         movieCollection.tag = 1
         movieCollection.register(TodayMoviesCollectionViewCell.self, forCellWithReuseIdentifier: TodayMoviesCollectionViewCell.id)
+        movieCollection.backgroundColor = .black
     }
 
 }

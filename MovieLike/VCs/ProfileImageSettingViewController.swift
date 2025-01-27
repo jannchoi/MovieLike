@@ -17,7 +17,11 @@ class ProfileImageSettingViewController: BaseViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        mainView.backgroundColor = .black
+        let titleLabel = UILabel()
+        titleLabel.text = "프로필 이미지 설정"
+        titleLabel.textColor = .white
+        navigationItem.titleView = titleLabel
+        
         selectedItem = passData?(nil)
         mainView.profileImages.delegate = self
         mainView.profileImages.dataSource = self

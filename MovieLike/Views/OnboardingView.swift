@@ -44,6 +44,7 @@ class OnboardingView: BaseView {
         }
     }
     override func configureView() {
+        backgroundColor = .black
         mainImageView.image = UIImage(named: "onboarding")
         onboardingLabel.labelDesign(inputText: "Onboarding", size: 27,weight: .bold, color: .white, alignment: .center)
         descriptionLabel.labelDesign(inputText: "당신만의 영화 세상, MovieLike를 시작해보세요.", size: 17, color: .white, alignment: .center)

@@ -6,3 +6,8 @@
 //
 
 import Foundation
+
+struct SearchMovie: Decodable {
+    let results : [MovieDetail]
+    let total_pages : Int
+}

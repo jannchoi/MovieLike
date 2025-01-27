@@ -9,21 +9,107 @@ import UIKit
 
 class SearchViewController: UIViewController {
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+    let mainView = SearchView()
+    var inputText : String?
+    var searchButtonClicked = false
+    var page: Int = 1
+    var movieList = [MovieDetail]()
+    var isEnd = false
+    
+    override func loadView() {
+        view = mainView
+        
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        mainView.searchBar.delegate = self
+        mainView.tableView.delegate = self
+        mainView.tableView.dataSource = self
+        mainView.tableView.prefetchDataSource = self
+        
+        setFirstUI()
     }
-    */
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        mainView.searchBar.layer.cornerRadius = 5
+        mainView.searchBar.clipsToBounds = true
+    }
+    func setFirstUI() {
+        if searchButtonClicked{
+            mainView.searchBar.resignFirstResponder()
+            mainView.tableView.isHidden = true
+            mainView.noSearchLabel.isHidden = true
+        }
+        else {
+            mainView.tableView.isHidden = false
+            loadData()
+        }
+    }
+    func loadData() {
+        NetworkManager.shared.callRequst(api: .searchMovie(query: inputText ?? "", page: page), model: SearchMovie.self) { value in
+            if value.results.isEmpty {
+                self.mainView.noSearchLabel.isHidden = false
+                self.mainView.tableView.isHidden = true
+            }
+            else {
+                self.mainView.noSearchLabel.isHidden = true
+            }
+            if self.page == 1{
+                self.movieList = value.results
+                //self.mainView.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
+            } else {
+                self.movieList.append(contentsOf: value.results)
+            }
+            if self.page > value.total_pages {
+                self.isEnd = true
+            }
+            self.mainView.tableView.reloadData()
+            
+        } failHandler: {
+            
+        }
 
+    }
+
+}
+extension SearchViewController: UITableViewDataSourcePrefetching {
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        for item in indexPaths {
+            if movieList.count - 4 <= item.row && isEnd == false {
+                page += 1
+                loadData()
+            }
+        }
+    }
+}
+extension SearchViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        inputText = searchBar.text ?? ""
+        inputText = inputText?.trimmingCharacters(in: .whitespacesAndNewlines)
+        page = 1
+        movieList.removeAll()
+        mainView.tableView.isHidden = false
+        loadData()
+        view.endEditing(true)
+    }
+}
+extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return movieList.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: SearchTableViewCell.id) as! SearchTableViewCell
+        
+        cell.configureData(item: movieList[indexPath.row])
+        return cell
+        
+    }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 120
+    }
+    
+    
 }

@@ -16,7 +16,12 @@ class ProfileSettingViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        let titleLabel = UILabel()
+        titleLabel.text = "프로필 설정"
+        titleLabel.textColor = .white
+        navigationItem.titleView = titleLabel
+        
         mainView.backgroundColor = .Myblack
         
         mainView.finishButton.isEnabled = false
@@ -39,8 +44,13 @@ class ProfileSettingViewController: UIViewController {
               let window = windowScene.windows.first else { return }
         let tabbar = TabBarController()
         let nav = UINavigationController(rootViewController: tabbar)
-        window.rootViewController = nav
-        window.makeKeyAndVisible()
+        let appearance = UINavigationBarAppearance()
+        appearance.backgroundColor = .black
+            appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+            nav.navigationBar.standardAppearance = appearance
+            nav.navigationBar.scrollEdgeAppearance = appearance
+            window.rootViewController = nav
+            window.makeKeyAndVisible()
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()

@@ -15,7 +15,7 @@ class OnboardingViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        mainView.backgroundColor = .Myblack
+
         mainView.startButton.addTarget(self, action: #selector(startButtonTapped), for: .touchUpInside)
     }
     

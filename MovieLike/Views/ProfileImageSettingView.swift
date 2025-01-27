@@ -42,6 +42,7 @@ class ProfileImageSettingView: BaseView {
         }
     }
     override func configureView() {
+        backgroundColor = .black
         profileImages.backgroundColor = .black
         profileImages.register(ProfileImageCollectionViewCell.self, forCellWithReuseIdentifier: ProfileImageCollectionViewCell.id)
     }

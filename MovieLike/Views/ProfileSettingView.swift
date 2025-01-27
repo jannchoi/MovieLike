@@ -46,11 +46,11 @@ class ProfileSettingView: BaseView {
     }
     override func configureView() {
         nicknameTextField.borderStyle = .none
-                descriptionLabel.labelDesign(inputText: "2글자 이상 10글자 미만으로 설정해주세요", size: 10, color: .MyBlue)
+                descriptionLabel.labelDesign(inputText: "2글자 이상 10글자 미만으로 설정해주세요", size: 12, color: .MyBlue)
         
         
 
-        finishButton.setButtonTitle(title: "완료", color: UIColor.MyBlue.cgColor, size: 17, weight: .bold)
+        finishButton.setButtonTitle(title: "완료", color: UIColor.MyBlue.cgColor, size: 16, weight: .bold)
         finishButton.backgroundColor = .black
 
     }

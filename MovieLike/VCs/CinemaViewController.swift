@@ -9,6 +9,7 @@ import UIKit
 
 class CinemaViewController: UIViewController {
     let mainView = CinemaView()
+    var trendMovieList = [MovieDetail]()
     
     override func loadView() {
         view = mainView
@@ -16,7 +17,8 @@ class CinemaViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        mainView.backgroundColor = .black
+
+        navigationBarDesign()
         mainView.searchedWords.delegate = self
         mainView.searchedWords.dataSource = self
         
@@ -24,7 +26,38 @@ class CinemaViewController: UIViewController {
         mainView.movieCollection.dataSource = self
         
         mainView.movieboxButton.isEnabled = false
-        setProfile()
+        
+        loadData()
+    }
+    func navigationBarDesign() {
+        self.tabBarController?.navigationItem.title = "오늘의 영화"
+        
+        self.tabBarController?.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .plain, target: self, action: #selector(searchButtonTapped))
+        self.tabBarController?.navigationItem.rightBarButtonItem?.tintColor = .MyBlue
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setProfile()    }
+    
+    @objc func searchButtonTapped() {
+        let vc = SearchViewController()
+        vc.searchButtonClicked = true
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    func loadData() {
+        let group = DispatchGroup()
+        group.enter()
+        NetworkManager.shared.callRequst(api: .todayMovie, model: TrendMovie.self) { value in
+            self.trendMovieList = value.results
+            group.leave()
+        } failHandler: {
+            print("fail")
+            group.leave()
+        }
+        group.notify(queue: .main) {
+            self.mainView.movieCollection.reloadData()
+        }
+
     }
     func setProfile() {
         let img = UserDefaultsManager.shared.profileImage
@@ -34,6 +67,7 @@ class CinemaViewController: UIViewController {
     }
     
     override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         mainView.movieboxButton.layer.cornerRadius = 8
         mainView.movieboxButton.clipsToBounds = true
         
@@ -42,8 +76,18 @@ class CinemaViewController: UIViewController {
         mainView.profileImage.clipsToBounds = true
         mainView.profileImage.layer.borderWidth = 1
         mainView.profileImage.layer.borderColor = UIColor.MyBlue.cgColor
+        movieCollectionLayout()
         
-        
+    }
+    
+    func movieCollectionLayout() {
+        if let layout = mainView.movieCollection.collectionViewLayout as? UICollectionViewFlowLayout {
+            let sectionInset: CGFloat = 1
+            let cellHeight = mainView.movieCollection.frame.height
+            layout.itemSize = CGSize(width: cellHeight / 12 * 7, height: cellHeight)
+            layout.sectionInset = UIEdgeInsets(top: 0, left: sectionInset, bottom: 0, right: sectionInset)
+            layout.invalidateLayout()
+        }
     }
 
 }
@@ -51,19 +95,21 @@ extension CinemaViewController: UICollectionViewDelegate, UICollectionViewDataSo
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch collectionView.tag {
         case 0 : return 10
-        default: return 10
+        default: return trendMovieList.count
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        var cell : UICollectionViewCell
         switch collectionView.tag {
-        case 0 : cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchWordsCollectionViewCell.id, for: indexPath) as! SearchWordsCollectionViewCell
-        default : cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayMoviesCollectionViewCell.id, for: indexPath) as! TodayMoviesCollectionViewCell
+        case 0 : let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchWordsCollectionViewCell.id, for: indexPath) as! SearchWordsCollectionViewCell
+            return cell
+        default :
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayMoviesCollectionViewCell.id, for: indexPath) as! TodayMoviesCollectionViewCell
+            cell.configureData(item: trendMovieList[indexPath.item])
+            return cell
+            
         }
-        cell.backgroundColor = .MyBlue
-        
-        return cell
+
     }
     
     
