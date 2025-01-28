@@ -12,7 +12,7 @@ class UserDefaultsManager {
     
     private init() { }
     
-    var nickname: String {  // default: false
+    var nickname: String {  // default: nil
         get {
             UserDefaults.standard.string(forKey: "nickname") ?? ""
         }
@@ -20,7 +20,7 @@ class UserDefaultsManager {
             UserDefaults.standard.set(newValue, forKey: "nickname")
         }
     }
-    var profileImage: Int {
+    var profileImage: Int { // default: 0
         get {
             UserDefaults.standard.integer(forKey: "profileImage")
         }
@@ -36,21 +36,21 @@ class UserDefaultsManager {
             UserDefaults.standard.set(newValue, forKey: "signDate")
         }
     }
-    var like: Bool {
+
+    var like: [Int] {
         get {
-            UserDefaults.standard.bool(forKey: "like")
+            UserDefaults.standard.array(forKey: "like") as? [Int] ?? []
         }
         set {
             UserDefaults.standard.set(newValue, forKey: "like")
         }
     }
-    
-    var info: [String] {
+    var searchedTerm: [String] {
         get {
-            UserDefaults.standard.array(forKey: "info") as? [String] ?? ["NO NAME","NO DATE","NO LEVEL"]
+            UserDefaults.standard.array(forKey: "searchedTerm") as? [String] ?? []
         }
         set {
-            UserDefaults.standard.set(newValue, forKey: "info")
+            UserDefaults.standard.set(newValue, forKey: "searchedTerm")
         }
     }
 }

@@ -11,6 +11,8 @@ import Alamofire
 enum TMDBRequest {
     case todayMovie
     case searchMovie(query: String, page: Int)
+    case movieImage(id: Int)
+    case cast(id: Int)
     
     var baseURL: String{
         return "https://api.themoviedb.org/3/"
@@ -24,6 +26,10 @@ enum TMDBRequest {
             return URL(string: baseURL + "trending/movie/day?language=ko-KR&page=1" )!
         case .searchMovie(let query, let page) :
             return URL(string: baseURL + "search/movie?query=\(query)&include_adult=false&language=ko-KR&page=\(page)")!
+        case .movieImage(let id) :
+            return URL(string: baseURL + "movie/\(id)/images")!
+        case .cast(let id) :
+            return URL(string: baseURL + "movie/\(id)/credits?language=ko-KR")!
         }
     }
     var method: HTTPMethod {

@@ -91,6 +91,9 @@ extension SearchViewController: UISearchBarDelegate {
         page = 1
         movieList.removeAll()
         mainView.tableView.isHidden = false
+        if !UserDefaultsManager.shared.searchedTerm.contains(inputText!) {
+            UserDefaultsManager.shared.searchedTerm.append(inputText!)
+        }
         loadData()
         view.endEditing(true)
     }
@@ -112,4 +115,15 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let vc = MovieDetailViewController()
+        let item = movieList[indexPath.row]
+        vc.movieId = item.id
+        vc.releaseDate = item.release_date
+        vc.rate = String(item.vote_average)
+        vc.movieTitle = item.title
+        vc.synopsis = item.overview
+        vc.genre = item.genre_ids
+        navigationController?.pushViewController(vc, animated: true)
+    }
 }

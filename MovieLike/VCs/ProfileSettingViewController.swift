@@ -21,12 +21,8 @@ class ProfileSettingViewController: UIViewController {
         titleLabel.text = "프로필 설정"
         titleLabel.textColor = .white
         navigationItem.titleView = titleLabel
-        
-        mainView.backgroundColor = .Myblack
-        
-        mainView.finishButton.isEnabled = false
+
         mainView.finishButton.addTarget(self, action: #selector(finishButtonClicked), for: .touchUpInside)
-        
         
         mainView.nicknameTextField.resignFirstResponder()
         mainView.nicknameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
@@ -52,6 +48,7 @@ class ProfileSettingViewController: UIViewController {
             window.rootViewController = nav
             window.makeKeyAndVisible()
     }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
             let border = CALayer()
@@ -75,7 +72,22 @@ class ProfileSettingViewController: UIViewController {
         
     }
     override func viewWillAppear(_ animated: Bool) {
-        mainView.profileImageButton.setImage(UIImage(named: "profile_\(initialImage)"), for: .normal)
+       
+        
+        let userdefaults = UserDefaultsManager.shared
+        
+        if initialImage == userdefaults.profileImage || userdefaults.profileImage == 0 { //p = 0, i==p | p = 0, nil
+            mainView.profileImageButton.setImage(UIImage(named: "profile_\(initialImage)"), for: .normal)
+        }else { //userdefaults에 저장되어 있을 때
+            initialImage = userdefaults.profileImage
+            mainView.profileImageButton.setImage(UIImage(named: "profile_\(initialImage)"), for: .normal)
+        }
+        
+        if userdefaults.nickname != "" {
+            mainView.nicknameTextField.text = userdefaults.nickname
+        }
+        isValidNickname()
+
     }
     @objc func profileImageTapped() {
         let vc = ProfileImageSettingViewController()
@@ -91,6 +103,9 @@ class ProfileSettingViewController: UIViewController {
     }
     
     @objc func textFieldDidChange() {
+        isValidNickname()
+    }
+    func isValidNickname() {
         guard let input = mainView.nicknameTextField.text else {return}
         let trimmedInput = input.trimmingCharacters(in: .whitespacesAndNewlines)
         var description : String

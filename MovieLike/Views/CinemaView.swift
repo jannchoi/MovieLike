@@ -24,9 +24,11 @@ class CinemaView: BaseView {
     
     func searchedWordsLayout() -> UICollectionViewLayout{
         let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 10
         layout.minimumLineSpacing = 10
         layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         return layout
     }
     func movieLayout() -> UICollectionViewLayout {
@@ -92,6 +94,7 @@ class CinemaView: BaseView {
         searchedWords.snp.makeConstraints { make in
             make.top.equalTo(searchLabel.snp.bottom).offset(2)
             make.leading.equalTo(safeAreaLayoutGuide).offset(8)
+            make.trailing.greaterThanOrEqualTo(safeAreaLayoutGuide).inset(8)
             make.height.equalTo(50)
         }
         noSearchedWord.snp.makeConstraints { make in
@@ -129,6 +132,7 @@ class CinemaView: BaseView {
         searchedWords.tag = 0
         searchedWords.register(SearchWordsCollectionViewCell.self, forCellWithReuseIdentifier: SearchWordsCollectionViewCell.id)
         searchedWords.backgroundColor = .black
+        
         movieCollection.tag = 1
         movieCollection.register(TodayMoviesCollectionViewCell.self, forCellWithReuseIdentifier: TodayMoviesCollectionViewCell.id)
         movieCollection.backgroundColor = .black

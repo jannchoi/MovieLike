@@ -45,6 +45,7 @@ class ProfileSettingView: BaseView {
         }
     }
     override func configureView() {
+        backgroundColor = .black
         nicknameTextField.borderStyle = .none
                 descriptionLabel.labelDesign(inputText: "2글자 이상 10글자 미만으로 설정해주세요", size: 12, color: .MyBlue)
         

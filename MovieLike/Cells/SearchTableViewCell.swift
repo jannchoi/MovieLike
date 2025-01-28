@@ -22,27 +22,38 @@ class SearchTableViewCell: BaseTableViewCell {
     
     func configureData(item: MovieDetail) {
         
-        if let url = item.poster_path {
-            let img = URL(string: url.imagePathFormat())
-           posterImage.kf.setImage(with: img)
-        }else {
-            posterImage.image = UIImage(systemName: "star")
-        }
+
+        posterImage.setOptionalImage(imgPath: item.poster_path)
 //        titleLable.text = "title"
 //        dateLabel.text = "date"
         
         titleLable.labelDesign(inputText: item.title, size: 14, weight: .bold, color: .white, lines: 2)
 
         dateLabel.labelDesign(inputText: item.release_date.dateFormat() ?? "None", size: 12, color: .MylightGray)
-        if UserDefaultsManager.shared.like {
+        heartButton.tag = item.id
+        if UserDefaultsManager.shared.like.contains(heartButton.tag) {
             heartButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
         } else {
             heartButton.setImage(UIImage(systemName: "heart"), for: .normal)
         }
+        
         heartButton.tintColor = .MyBlue
         setGenre(ids: item.genre_ids)
         
     }
+    @objc func heartButtonTapped2(_ sender:  UIButton) {
+        if let idx = UserDefaultsManager.shared.like.firstIndex(of: sender.tag) {
+            //만약에 값을 가지고 있다면, 제거, 빈 하트
+            UserDefaultsManager.shared.like.remove(at: idx)
+            heartButton.setImage(UIImage(systemName: "heart"), for: .normal)
+            print(sender.tag, "heart")
+        } else { // 값이 없다면, 추가, 꽉찬 하트
+            UserDefaultsManager.shared.like.append(sender.tag)
+            heartButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+            print(sender.tag, "heart.fil")
+        }
+    }
+    
     func setGenre(ids: [Int]) {
         if ids.count >= 1, let genre1Text = GenreManager.shared.getGenre(ids[0]) {
             genre1.labelDesign(inputText: genre1Text, size: 12, color: .white)
@@ -113,7 +124,7 @@ class SearchTableViewCell: BaseTableViewCell {
             label.layer.cornerRadius = 5
             label.clipsToBounds = true
         }
-
+        heartButton.addTarget(self, action: #selector(heartButtonTapped2), for: .touchUpInside)
         
     }
 }

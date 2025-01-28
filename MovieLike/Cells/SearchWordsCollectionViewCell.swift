@@ -12,25 +12,38 @@ class SearchWordsCollectionViewCell: BaseCollectionViewCell {
     
     static let id = "SearchWordsCollectionViewCell"
     let word = UILabel()
-    let xmark = UIImageView()
+    let xButton = UIButton()
+    
+    func configureData(item: Int) {
+        word.text = UserDefaultsManager.shared.searchedTerm[item]
+    }
     override func configureHierachy() {
         contentView.addSubview(word)
-        contentView.addSubview(xmark)
+        contentView.addSubview(xButton)
     }
     override func configureLayout() {
         word.snp.makeConstraints { make in
-            make.leading.verticalEdges.equalToSuperview().inset(4)
+            make.leading.verticalEdges.equalToSuperview().inset(8)
+            make.height.equalTo(16)
         }
-        xmark.snp.makeConstraints { make in
-            make.trailing.verticalEdges.equalToSuperview().inset(4)
+        xButton.snp.makeConstraints { make in
+            make.trailing.verticalEdges.equalToSuperview().inset(8)
+            make.leading.equalTo(word.snp.trailing).offset(2)
+            make.size.equalTo(16)
         }
     }
     override func configureView() {
         contentView.backgroundColor = .white
-        contentView.layer.cornerRadius = contentView.frame.height / 2
+        DispatchQueue.main.async {
+            self.contentView.layer.cornerRadius = self.contentView.frame.height / 2
+        }
+
         word.textColor = .black
+        word.font = UIFont.systemFont(ofSize: 12)
         
-        xmark.image = UIImage(systemName: "xmark")
-        xmark.tintColor = .black
+        xButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+        xButton.tintColor = .black
+
     }
+
 }

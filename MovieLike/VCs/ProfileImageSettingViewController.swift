@@ -29,6 +29,7 @@ class ProfileImageSettingViewController: BaseViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(backToProfileSetting))
     }
     @objc func backToProfileSetting() {
+        UserDefaultsManager.shared.profileImage = selectedItem ?? 0
         passData?(selectedItem)
         navigationController?.popViewController(animated: true)
         

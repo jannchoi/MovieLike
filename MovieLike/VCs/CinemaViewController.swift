@@ -10,7 +10,6 @@ import UIKit
 class CinemaViewController: UIViewController {
     let mainView = CinemaView()
     var trendMovieList = [MovieDetail]()
-    
     override func loadView() {
         view = mainView
     }
@@ -21,13 +20,25 @@ class CinemaViewController: UIViewController {
         navigationBarDesign()
         mainView.searchedWords.delegate = self
         mainView.searchedWords.dataSource = self
-        
+
+
         mainView.movieCollection.delegate = self
         mainView.movieCollection.dataSource = self
         
         mainView.movieboxButton.isEnabled = false
-        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(profileViewTapped))
+        mainView.grayBackView.addGestureRecognizer(tapGesture)
+        mainView.deleteButton.addTarget(self, action: #selector(resetSearchedTerm), for: .touchUpInside)
         loadData()
+    }
+    @objc func resetSearchedTerm() {
+        UserDefaultsManager.shared.searchedTerm.removeAll()
+        mainView.searchedWords.reloadData()
+    }
+
+    @objc func profileViewTapped() {
+        let vc = ProfileSettingViewController()
+        navigationController?.pushViewController(vc, animated: true)
     }
     func navigationBarDesign() {
         self.tabBarController?.navigationItem.title = "오늘의 영화"
@@ -37,7 +48,14 @@ class CinemaViewController: UIViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        setProfile()    }
+        setProfile()
+        mainView.searchedWords.reloadData()
+        if UserDefaultsManager.shared.searchedTerm.isEmpty {
+            mainView.noSearchedWord.isHidden = false
+        } else {
+            mainView.noSearchedWord.isHidden = true
+        }
+    }
     
     @objc func searchButtonTapped() {
         let vc = SearchViewController()
@@ -90,11 +108,19 @@ class CinemaViewController: UIViewController {
         }
     }
 
+    @objc func xButtonTapped(_ sender: UIButton) {
+        print(#function,UserDefaultsManager.shared.searchedTerm.count ,sender.tag)
+        UserDefaultsManager.shared.searchedTerm.remove(at: sender.tag)
+        mainView.searchedWords.reloadData()
+
+    }
 }
+
 extension CinemaViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch collectionView.tag {
-        case 0 : return 10
+        case 0 : return UserDefaultsManager.shared.searchedTerm.count
         default: return trendMovieList.count
         }
     }
@@ -102,6 +128,9 @@ extension CinemaViewController: UICollectionViewDelegate, UICollectionViewDataSo
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         switch collectionView.tag {
         case 0 : let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchWordsCollectionViewCell.id, for: indexPath) as! SearchWordsCollectionViewCell
+            cell.configureData(item: indexPath.item)
+            cell.xButton.tag = indexPath.item
+            cell.xButton.addTarget(self, action: #selector(xButtonTapped), for: .touchUpInside)
             return cell
         default :
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayMoviesCollectionViewCell.id, for: indexPath) as! TodayMoviesCollectionViewCell
@@ -111,6 +140,25 @@ extension CinemaViewController: UICollectionViewDelegate, UICollectionViewDataSo
         }
 
     }
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        switch collectionView.tag {
+        case 0 :
+            let vc = SearchViewController()
+            vc.inputText = UserDefaultsManager.shared.searchedTerm[indexPath.item]
+            navigationController?.pushViewController(vc, animated: true)
+        default :
+            let vc = MovieDetailViewController()
+            let item = trendMovieList[indexPath.item]
+            vc.movieId = item.id
+            vc.releaseDate = item.release_date
+            vc.rate = String(item.vote_average)
+            vc.movieTitle = item.title
+            vc.synopsis = item.overview
+            vc.genre = item.genre_ids
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+    
     
     
 }
