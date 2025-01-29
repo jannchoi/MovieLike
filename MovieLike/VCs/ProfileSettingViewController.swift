@@ -11,6 +11,7 @@ class ProfileSettingViewController: UIViewController {
 
     let mainView = ProfileSettingView()
     var initialImage = Int.random(in: 0...11)
+    var fromProfileView = false
     override func loadView() {
         view = mainView
     }
@@ -28,14 +29,36 @@ class ProfileSettingViewController: UIViewController {
         mainView.nicknameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         mainView.nicknameTextField.delegate = self
         
-        
         mainView.profileImageButton.addTarget(self, action: #selector(profileImageTapped), for: .touchUpInside)
         
+        if fromProfileView {
+            setNavigationBar()
+            mainView.finishButton.isHidden = true
+        }
+        
+    }
+    func setNavigationBar() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .plain, target: self, action: #selector(backToProfileTab))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "저장", style: .plain, target: self, action: #selector(saveProfile))
+        navigationItem.rightBarButtonItem?.tintColor = .MyBlue
+        navigationItem.leftBarButtonItem?.tintColor = .MyBlue
+    }
+    
+    @objc func saveProfile() {
+        UserDefaultsManager.shared.nickname = mainView.nicknameTextField.text!
+        UserDefaultsManager.shared.profileImage = initialImage
+        presentingViewController?.viewWillAppear(true)
+        dismiss(animated: true)
+    }
+    @objc func backToProfileTab() {
+        dismiss(animated: true)
     }
     @objc func finishButtonClicked() {
         UserDefaultsManager.shared.nickname = mainView.nicknameTextField.text!
         UserDefaultsManager.shared.profileImage = initialImage
         UserDefaultsManager.shared.signDate = Date().DateToString()
+        UserDefaultsManager.shared.used = true
+        print(#function, UserDefaultsManager.shared.used)
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let window = windowScene.windows.first else { return }
         let tabbar = TabBarController()
@@ -72,7 +95,6 @@ class ProfileSettingViewController: UIViewController {
         
     }
     override func viewWillAppear(_ animated: Bool) {
-       
         
         let userdefaults = UserDefaultsManager.shared
         
@@ -124,9 +146,6 @@ class ProfileSettingViewController: UIViewController {
         }
         mainView.descriptionLabel.text = description
     }
-    
-
-    
 
 }
 extension ProfileSettingViewController: UITextFieldDelegate {

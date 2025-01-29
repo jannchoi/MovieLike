@@ -17,7 +17,7 @@ class CinemaViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationBarDesign()
+        
         mainView.searchedWords.delegate = self
         mainView.searchedWords.dataSource = self
 
@@ -25,7 +25,6 @@ class CinemaViewController: UIViewController {
         mainView.movieCollection.delegate = self
         mainView.movieCollection.dataSource = self
         
-        mainView.movieboxButton.isEnabled = false
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(profileViewTapped))
         mainView.grayBackView.addGestureRecognizer(tapGesture)
         mainView.deleteButton.addTarget(self, action: #selector(resetSearchedTerm), for: .touchUpInside)
@@ -48,6 +47,7 @@ class CinemaViewController: UIViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        navigationBarDesign()
         setProfile()
         mainView.searchedWords.reloadData()
         if UserDefaultsManager.shared.searchedTerm.isEmpty {
@@ -78,10 +78,11 @@ class CinemaViewController: UIViewController {
 
     }
     func setProfile() {
-        let img = UserDefaultsManager.shared.profileImage
-        mainView.profileImage.image = UIImage(named: "profile_\(img)")
-        mainView.nickname.text = UserDefaultsManager.shared.nickname
-        mainView.dateLabel.text = UserDefaultsManager.shared.signDate + " 가입"
+        let data = UserDefaultsManager.shared
+        mainView.profileImage.image = UIImage(named: "profile_\(data.profileImage)")
+        mainView.nickname.text = data.nickname
+        mainView.dateLabel.text = data.signDate + " 가입"
+        mainView.movieboxButton.setButtonTitle(title: "\(data.like.count) 개의 무비박스 보관중", color: UIColor.white.cgColor, size: 17, weight: .bold)
     }
     
     override func viewDidLayoutSubviews() {
@@ -109,10 +110,12 @@ class CinemaViewController: UIViewController {
     }
 
     @objc func xButtonTapped(_ sender: UIButton) {
-        print(#function,UserDefaultsManager.shared.searchedTerm.count ,sender.tag)
         UserDefaultsManager.shared.searchedTerm.remove(at: sender.tag)
         mainView.searchedWords.reloadData()
 
+    }
+    @objc func updateMoviebox() {
+        mainView.movieboxButton.setButtonTitle(title: "\(UserDefaultsManager.shared.like.count) 개의 무비박스 보관중", color: UIColor.white.cgColor, size: 17, weight: .bold)
     }
 }
 
@@ -135,6 +138,7 @@ extension CinemaViewController: UICollectionViewDelegate, UICollectionViewDataSo
         default :
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayMoviesCollectionViewCell.id, for: indexPath) as! TodayMoviesCollectionViewCell
             cell.configureData(item: trendMovieList[indexPath.item])
+            cell.heartButton.addTarget(self, action: #selector(updateMoviebox), for: .touchUpInside)
             return cell
             
         }
@@ -144,7 +148,9 @@ extension CinemaViewController: UICollectionViewDelegate, UICollectionViewDataSo
         switch collectionView.tag {
         case 0 :
             let vc = SearchViewController()
-            vc.inputText = UserDefaultsManager.shared.searchedTerm[indexPath.item]
+            let word = UserDefaultsManager.shared.searchedTerm[indexPath.item]
+            vc.inputText = word
+            vc.mainView.searchBar.text = word
             navigationController?.pushViewController(vc, animated: true)
         default :
             let vc = MovieDetailViewController()

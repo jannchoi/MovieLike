@@ -38,7 +38,8 @@ class SearchView: BaseView {
         backgroundColor = .black
         searchBar.searchTextField.attributedPlaceholder = NSAttributedString(string: "영화를 검색해보세요.", attributes: [NSAttributedString.Key.foregroundColor : UIColor.lightGray])
         
-        searchBar.barTintColor = .darkGray
+        searchBar.barTintColor = .black
+        searchBar.searchTextField.textColor = .white
         searchBar.searchTextField.leftView?.tintColor = .darkGray
         searchBar.backgroundColor = .black
         noSearchLabel.labelDesign(inputText: "원하는 검색 결과를 찾지 못했습니다.", size: 12, color: .MyGray)

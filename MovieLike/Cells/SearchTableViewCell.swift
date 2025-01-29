@@ -24,12 +24,10 @@ class SearchTableViewCell: BaseTableViewCell {
         
 
         posterImage.setOptionalImage(imgPath: item.poster_path)
-//        titleLable.text = "title"
-//        dateLabel.text = "date"
-        
         titleLable.labelDesign(inputText: item.title, size: 14, weight: .bold, color: .white, lines: 2)
 
         dateLabel.labelDesign(inputText: item.release_date.dateFormat() ?? "None", size: 12, color: .MylightGray)
+        
         heartButton.tag = item.id
         if UserDefaultsManager.shared.like.contains(heartButton.tag) {
             heartButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
@@ -55,19 +53,21 @@ class SearchTableViewCell: BaseTableViewCell {
     }
     
     func setGenre(ids: [Int]) {
+
         if ids.count >= 1, let genre1Text = GenreManager.shared.getGenre(ids[0]) {
-            genre1.labelDesign(inputText: genre1Text, size: 12, color: .white)
+            genre1.labelDesign(inputText: " " + genre1Text + " ", size: 12, color: .white)
             genre1.isHidden = false
         } else {
             genre1.isHidden = true
         }
-
+        
         if ids.count >= 2, let genre2Text = GenreManager.shared.getGenre(ids[1]) {
-            genre2.labelDesign(inputText: genre2Text, size: 12, color: .white)
+            genre2.labelDesign(inputText: " " + genre2Text + " ", size: 12, color: .white)
             genre2.isHidden = false
         } else {
             genre2.isHidden = true
         }
+        
     }
     
     override func configureHierachy() {
@@ -120,7 +120,7 @@ class SearchTableViewCell: BaseTableViewCell {
     override func configureView() {
         backgroundColor = .black
         [genre1, genre2].forEach { label in
-            label.backgroundColor = .MyGray
+            label.backgroundColor = .darkGray
             label.layer.cornerRadius = 5
             label.clipsToBounds = true
         }

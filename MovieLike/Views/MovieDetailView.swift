@@ -11,6 +11,8 @@ import SnapKit
 class MovieDetailView: BaseView {
     let scrollView = UIScrollView()
     lazy var backDropView = UICollectionView(frame: .zero, collectionViewLayout: backDropLayout())
+    let pager = UIPageControl()
+    let pagerBackView = UIView()
     let infoStackView = UIStackView()
     let dateLabel = UIButton()
     let rateLabel = UIButton()
@@ -29,6 +31,8 @@ class MovieDetailView: BaseView {
         layout.itemSize = CGSize(width: UIScreen.main.bounds.width, height: 300)
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 0
+        layout.minimumInteritemSpacing = 0
         return layout
     }
     
@@ -57,6 +61,8 @@ class MovieDetailView: BaseView {
     override func configureHierachy() {
         addSubview(scrollView)
         scrollView.addSubview(backDropView)
+        scrollView.addSubview(pagerBackView)
+        scrollView.addSubview(pager)
         scrollView.addSubview(infoStackView)
         infoStackView.addArrangedSubview(dateLabel)
         infoStackView.addArrangedSubview(rateLabel)
@@ -79,6 +85,16 @@ class MovieDetailView: BaseView {
             make.top.equalToSuperview()
             make.width.equalTo(scrollView.snp.width)
             make.height.equalTo(300)
+        }
+        pager.snp.makeConstraints { make in
+            make.centerX.equalTo(safeAreaLayoutGuide)
+            make.bottom.equalTo(backDropView.snp.bottom).offset(-2)
+        }
+        pagerBackView.snp.makeConstraints { make in
+            make.centerX.equalTo(safeAreaLayoutGuide)
+            make.centerY.equalTo(pager)
+            make.height.equalTo(pager).inset(2)
+            make.width.equalTo(pager).inset(20)
         }
         infoStackView.snp.makeConstraints { make in
             make.top.equalTo(backDropView.snp.bottom).offset(8)
@@ -159,6 +175,9 @@ class MovieDetailView: BaseView {
         
         infoStackView.axis = .horizontal
         infoStackView.spacing = 2
+        
+        pagerBackView.backgroundColor = .darkGray
+
         
     }
     

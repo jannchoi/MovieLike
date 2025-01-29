@@ -12,6 +12,15 @@ class UserDefaultsManager {
     
     private init() { }
     
+    var used: Bool {  // default: false
+        get {
+            UserDefaults.standard.bool(forKey: "used")
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "used")
+        }
+    }
+    
     var nickname: String {  // default: nil
         get {
             UserDefaults.standard.string(forKey: "nickname") ?? ""

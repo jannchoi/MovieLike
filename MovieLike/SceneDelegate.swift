@@ -14,10 +14,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let scene = (scene as? UIWindowScene) else { return }
-        
         window = UIWindow(windowScene: scene)
-        let nav = UINavigationController(rootViewController: OnboardingViewController())
-        window?.rootViewController = nav
+        if UserDefaultsManager.shared.used {
+            let tabbar = TabBarController()
+            let nav = UINavigationController(rootViewController: tabbar)
+            let appearance = UINavigationBarAppearance()
+            appearance.backgroundColor = .black
+                appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+                nav.navigationBar.standardAppearance = appearance
+                nav.navigationBar.scrollEdgeAppearance = appearance
+                window?.rootViewController = nav
+        }
+        else {
+            window?.rootViewController = UINavigationController(rootViewController: OnboardingViewController())
+        }
         window?.makeKeyAndVisible()
     }
 

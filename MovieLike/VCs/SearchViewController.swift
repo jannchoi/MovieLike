@@ -18,7 +18,6 @@ class SearchViewController: UIViewController {
     
     override func loadView() {
         view = mainView
-        
     }
     
     override func viewDidLoad() {
@@ -92,7 +91,7 @@ extension SearchViewController: UISearchBarDelegate {
         movieList.removeAll()
         mainView.tableView.isHidden = false
         if !UserDefaultsManager.shared.searchedTerm.contains(inputText!) {
-            UserDefaultsManager.shared.searchedTerm.append(inputText!)
+            UserDefaultsManager.shared.searchedTerm.insert(inputText!, at: 0)
         }
         loadData()
         view.endEditing(true)

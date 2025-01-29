@@ -30,16 +30,31 @@ class MovieDetailViewController: UIViewController {
         mainView.synopsisShort.text = synopsis
         mainView.synopsisLong.text = synopsis
         
+        mainView.backDropView.showsHorizontalScrollIndicator = false
         mainView.backDropView.isPagingEnabled = true
         setDelegate()
         navigationBarDesign()
         loadData()
         setInfoView()
+        
+        mainView.pager.numberOfPages = backdropImg.count
+        mainView.pager.currentPage = 0
+        
+        mainView.pager.pageIndicatorTintColor = .MyGray
+        mainView.pager.currentPageIndicatorTintColor = .MylightGray
+        mainView.pager.addTarget(self, action: #selector(pageChanged), for: .valueChanged)
+        
+    }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        mainView.pagerBackView.layer.cornerRadius = mainView.pagerBackView.frame.height / 2
+    }
+    @objc func pageChanged(_ sender: UIPageControl) {
+        let indexPath = IndexPath(item: sender.currentPage, section: 0)
+        mainView.backDropView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
     }
     func navigationBarDesign() {
         navigationItem.title = movieTitle ?? "title"
-        
-//        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "heart"), style: .plain, target: self, action: #selector(heartButtonTappeed))
         
         if UserDefaultsManager.shared.like.contains(movieId!) {
             navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "heart.fill"), style: .plain, target: self, action: #selector(heartButtonTappeed))
@@ -51,16 +66,13 @@ class MovieDetailViewController: UIViewController {
     }
     @objc func heartButtonTappeed() {
         if let idx = UserDefaultsManager.shared.like.firstIndex(of: movieId!) {
-            //만약에 값을 가지고 있다면, 제거, 빈 하트
+            
             UserDefaultsManager.shared.like.remove(at: idx)
             navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "heart"), style: .plain, target: self, action: #selector(heartButtonTappeed))
-        } else { // 값이 없다면, 추가, 꽉찬 하트
+        } else {
             UserDefaultsManager.shared.like.append(movieId!)
             navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "heart.fill"), style: .plain, target: self, action: #selector(heartButtonTappeed))
         }
-    }
-    func toggleLike(_ sender: UIButton) {
-        
     }
     func setDelegate() {
         mainView.backDropView.delegate = self
@@ -119,13 +131,13 @@ class MovieDetailViewController: UIViewController {
     }
     func setInfoView() {
         let date = mainView.infoStackView.arrangedSubviews[0] as! UIButton
-        date.setAttributedTitle(NSAttributedString(string: releaseDate ?? "None" + " | ", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 12) ,NSAttributedString.Key.foregroundColor : UIColor.MyGray]), for: .normal)
+        date.setAttributedTitle(NSAttributedString(string: (releaseDate ?? "None") + " | ", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 12) ,NSAttributedString.Key.foregroundColor : UIColor.MyGray]), for: .normal)
         date.setImage(UIImage(systemName: "calendar"), for: .normal)
         date.tintColor = .MyGray
         date.isUserInteractionEnabled = false
         
         let tempRate = mainView.infoStackView.arrangedSubviews[1] as! UIButton
-        tempRate.setAttributedTitle(NSAttributedString(string: rate ?? "Nonw" + " | ", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 12) ,NSAttributedString.Key.foregroundColor : UIColor.MyGray]), for: .normal)
+        tempRate.setAttributedTitle(NSAttributedString(string: (rate ?? "None") + " |", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 12) ,NSAttributedString.Key.foregroundColor : UIColor.MyGray]), for: .normal)
         tempRate.setImage(UIImage(systemName: "star.fill"), for: .normal)
         tempRate.tintColor = .MyGray
         tempRate.isUserInteractionEnabled = false
@@ -135,7 +147,7 @@ class MovieDetailViewController: UIViewController {
         
         var genretotal = [String]()
 
-        if let genre {
+        if let genre, genre.count > 0 {
             let min = min(genre.count, 5) - 1
             for i in 0...min {
                 genretotal.append(GenreManager.shared.getGenre(genre[i]) ?? "")
@@ -187,5 +199,18 @@ extension MovieDetailViewController: UICollectionViewDelegate, UICollectionViewD
 
     }
     
-    
+}
+
+extension MovieDetailViewController: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView == mainView.backDropView {
+            let width = scrollView.bounds.size.width
+            let x = scrollView.contentOffset.x + (width / 2)
+            let newPage = Int(x / width)
+            
+            if mainView.pager.currentPage != newPage {
+                mainView.pager.currentPage = newPage
+            }
+        }
+    }
 }
