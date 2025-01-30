@@ -9,12 +9,7 @@ import UIKit
 import SnapKit
 
 class CinemaView: BaseView {
-    let grayBackView = UIView()
-    let profileImage = UIImageView()
-    let nickname = UILabel()
-    let dateLabel = UILabel()
-    let angleBracket = UIImageView()
-    let movieboxButton = UIButton()
+    let profileView = ProfileBaseView()
     let searchLabel = UILabel()
     let noSearchedWord = UILabel()
     let deleteButton = UIButton()
@@ -41,12 +36,7 @@ class CinemaView: BaseView {
     }
 
     override func configureHierachy() {
-        addSubview(grayBackView)
-        grayBackView.addSubview(profileImage)
-        grayBackView.addSubview(nickname)
-        grayBackView.addSubview(dateLabel)
-        grayBackView.addSubview(angleBracket)
-        grayBackView.addSubview(movieboxButton)
+        addSubview(profileView)
         addSubview(searchLabel)
         addSubview(deleteButton)
         addSubview(noSearchedWord)
@@ -55,36 +45,12 @@ class CinemaView: BaseView {
         addSubview(movieCollection)
     }
     override func configureLayout() {
-        grayBackView.snp.makeConstraints { make in
+        profileView.snp.makeConstraints { make in
             make.top.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(8)
             make.height.equalTo(140)
         }
-        profileImage.snp.makeConstraints { make in
-            make.top.leading.equalToSuperview().inset(16)
-            make.size.equalTo(55)
-        }
-        nickname.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(16)
-            make.leading.equalTo(profileImage.snp.trailing).offset(8)
-        }
-        dateLabel.snp.makeConstraints { make in
-            make.top.equalTo(nickname.snp.bottom).offset(6)
-            make.leading.equalTo(profileImage.snp.trailing).offset(8)
-        }
-        angleBracket.snp.makeConstraints { make in
-            make.centerY.equalTo(profileImage)
-            make.trailing.equalToSuperview().inset(16)
-            make.size.equalTo(20)
-        }
-        
-        movieboxButton.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
-            make.bottom.equalToSuperview().inset(12)
-            make.height.equalTo(33)
-        }
-        
         searchLabel.snp.makeConstraints { make in
-            make.top.equalTo(grayBackView.snp.bottom).offset(12)
+            make.top.equalTo(profileView.snp.bottom).offset(12)
             make.leading.equalTo(safeAreaLayoutGuide).offset(8)
         }
         deleteButton.snp.makeConstraints { make in
@@ -114,17 +80,8 @@ class CinemaView: BaseView {
     }
     override func configureView() {
         backgroundColor = .black
-        grayBackView.backgroundColor = .darkGray
-
-        nickname.labelDesign(inputText: "nickname", size: 16, weight : .bold, color: .white)
-        dateLabel.labelDesign(inputText: "25.01.01 가입", size: 12, color: .MylightGray)
         noSearchedWord.labelDesign(inputText: "최근 검색어 내역이 없습니다.", size: 13, color: .MyGray)
-        angleBracket.image = UIImage(systemName: "chevron.right")
-        angleBracket.tintColor = .MyGray
-        
-        movieboxButton.backgroundColor = .MyBlue.withAlphaComponent(0.5)
-        movieboxButton.setButtonTitle(title: "0 개의 무비박스 보관중", color: UIColor.white.cgColor, size: 17, weight: .bold)
-        deleteButton.setButtonTitle(title: "전체 삭제", color: UIColor.MyBlue.cgColor, size: 14)
+        deleteButton.setButtonTitle(title: "전체 삭제", color: UIColor.MyBlue, size: 14)
         
         searchLabel.labelDesign(inputText: "최근검색어", size: 16, weight: .bold, color: .white)
         movieLabel.labelDesign(inputText: "오늘의 영화", size: 16, weight: .bold, color: .white)

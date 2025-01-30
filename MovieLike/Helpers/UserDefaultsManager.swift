@@ -12,7 +12,7 @@ class UserDefaultsManager {
     
     private init() { }
     
-    var used: Bool {  // default: false
+    var used: Bool {
         get {
             UserDefaults.standard.bool(forKey: "used")
         }
@@ -21,7 +21,7 @@ class UserDefaultsManager {
         }
     }
     
-    var nickname: String {  // default: nil
+    var nickname: String {
         get {
             UserDefaults.standard.string(forKey: "nickname") ?? ""
         }
@@ -29,7 +29,7 @@ class UserDefaultsManager {
             UserDefaults.standard.set(newValue, forKey: "nickname")
         }
     }
-    var profileImage: Int { // default: 0
+    var profileImage: Int { 
         get {
             UserDefaults.standard.integer(forKey: "profileImage")
         }

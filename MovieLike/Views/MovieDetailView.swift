@@ -180,6 +180,9 @@ class MovieDetailView: BaseView {
 
         
     }
+    func updateViewLayout() {
+        pagerBackView.layer.cornerRadius = pagerBackView.frame.height / 2
+    }
     
     
 }

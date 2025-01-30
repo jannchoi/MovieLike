@@ -16,6 +16,7 @@ class SearchWordsCollectionViewCell: BaseCollectionViewCell {
     
     func configureData(item: Int) {
         word.text = UserDefaultsManager.shared.searchedTerm[item]
+        xButton.tag = item
     }
     override func configureHierachy() {
         contentView.addSubview(word)
@@ -34,10 +35,10 @@ class SearchWordsCollectionViewCell: BaseCollectionViewCell {
     }
     override func configureView() {
         contentView.backgroundColor = .white
+        
         DispatchQueue.main.async {
             self.contentView.layer.cornerRadius = self.contentView.frame.height / 2
         }
-
         word.textColor = .black
         word.font = UIFont.systemFont(ofSize: 12)
         

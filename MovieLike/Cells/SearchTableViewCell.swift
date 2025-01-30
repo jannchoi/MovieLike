@@ -16,8 +16,7 @@ class SearchTableViewCell: BaseTableViewCell {
     let posterImage = UIImageView()
     let titleLable = UILabel()
     let dateLabel = UILabel()
-    let genre1 = UILabel()
-    let genre2 = UILabel()
+    let genreStack = UIStackView()
     let heartButton = UIButton()
     
     func configureData(item: MovieDetail) {
@@ -25,57 +24,47 @@ class SearchTableViewCell: BaseTableViewCell {
 
         posterImage.setOptionalImage(imgPath: item.poster_path)
         titleLable.labelDesign(inputText: item.title, size: 14, weight: .bold, color: .white, lines: 2)
-
-        dateLabel.labelDesign(inputText: item.release_date.dateFormat() ?? "None", size: 12, color: .MylightGray)
+        
+        dateLabel.labelDesign(inputText: item.release_date?.dateFormat() ?? "None", size: 12, color: .MylightGray)
         
         heartButton.tag = item.id
-        if UserDefaultsManager.shared.like.contains(heartButton.tag) {
-            heartButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-        } else {
-            heartButton.setImage(UIImage(systemName: "heart"), for: .normal)
-        }
+        heartButton.setHeartButton()
         
         heartButton.tintColor = .MyBlue
-        setGenre(ids: item.genre_ids)
+        configGenre(ids: item.genre_ids)
         
     }
-    @objc func heartButtonTapped2(_ sender:  UIButton) {
-        if let idx = UserDefaultsManager.shared.like.firstIndex(of: sender.tag) {
-            //만약에 값을 가지고 있다면, 제거, 빈 하트
-            UserDefaultsManager.shared.like.remove(at: idx)
-            heartButton.setImage(UIImage(systemName: "heart"), for: .normal)
-            print(sender.tag, "heart")
-        } else { // 값이 없다면, 추가, 꽉찬 하트
-            UserDefaultsManager.shared.like.append(sender.tag)
-            heartButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-            print(sender.tag, "heart.fil")
+    func configGenre(ids: [Int]) {
+        
+        genreStack.arrangedSubviews.forEach { (view) in
+            genreStack.removeArrangedSubview(view)
+            view.removeFromSuperview()
         }
-    }
-    
-    func setGenre(ids: [Int]) {
+        if ids.count > 0 {
+            let maxNum = 2
+            let num = min(ids.count, maxNum) - 1
+            
+            for i in 0...num {
+                let label = UILabel()
+                genreStack.addArrangedSubview(label)
+                label.setContentHuggingPriority(.required, for: .horizontal)
+                label.setContentCompressionResistancePriority(.required, for: .horizontal)
+                label.backgroundColor = .darkGray
+                label.layer.cornerRadius = 5
+                label.clipsToBounds = true
+                if let genretxt = GenreManager.shared.getGenre(ids[i]) {
+                    label.labelDesign(inputText:  " " + genretxt + " ", size: 12, color: .white)
+                }
+            }
+        }
 
-        if ids.count >= 1, let genre1Text = GenreManager.shared.getGenre(ids[0]) {
-            genre1.labelDesign(inputText: " " + genre1Text + " ", size: 12, color: .white)
-            genre1.isHidden = false
-        } else {
-            genre1.isHidden = true
-        }
-        
-        if ids.count >= 2, let genre2Text = GenreManager.shared.getGenre(ids[1]) {
-            genre2.labelDesign(inputText: " " + genre2Text + " ", size: 12, color: .white)
-            genre2.isHidden = false
-        } else {
-            genre2.isHidden = true
-        }
-        
     }
-    
+
     override func configureHierachy() {
         contentView.addSubview(posterImage)
         contentView.addSubview(titleLable)
         contentView.addSubview(dateLabel)
-        contentView.addSubview(genre1)
-        contentView.addSubview(genre2)
+        contentView.addSubview(genreStack)
         contentView.addSubview(heartButton)
     }
     
@@ -99,32 +88,20 @@ class SearchTableViewCell: BaseTableViewCell {
             make.top.equalTo(titleLable.snp.bottom).offset(4)
             make.height.equalTo(15)
         }
-        
-        genre1.snp.makeConstraints { make in
+        genreStack.snp.makeConstraints { make in
             make.leading.equalTo(posterImage.snp.trailing).offset(10)
             make.bottom.equalTo(posterImage.snp.bottom)
             make.height.equalTo(17)
         }
-
-        genre2.snp.makeConstraints { make in
-            make.leading.equalTo(genre1.snp.trailing).offset(2)
-            make.centerY.equalTo(genre1)
-            make.height.equalTo(17)
-        }
-
         heartButton.snp.makeConstraints { make in
-            make.centerY.equalTo(genre1)
+            make.centerY.equalTo(genreStack)
             make.trailing.equalToSuperview().inset(8)
         }
     }
     override func configureView() {
         backgroundColor = .black
-        [genre1, genre2].forEach { label in
-            label.backgroundColor = .darkGray
-            label.layer.cornerRadius = 5
-            label.clipsToBounds = true
-        }
-        heartButton.addTarget(self, action: #selector(heartButtonTapped2), for: .touchUpInside)
-        
+        heartButton.addTargetToHeartButton()
+        genreStack.spacing = 5
+        genreStack.axis = .horizontal
     }
 }

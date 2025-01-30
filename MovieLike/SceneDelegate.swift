@@ -25,6 +25,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 nav.navigationBar.scrollEdgeAppearance = appearance
                 window?.rootViewController = nav
         }
+        
         else {
             window?.rootViewController = UINavigationController(rootViewController: OnboardingViewController())
         }

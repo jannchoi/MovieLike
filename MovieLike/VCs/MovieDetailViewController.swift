@@ -7,7 +7,6 @@
 
 import UIKit
 
-
 class MovieDetailViewController: UIViewController {
     let mainView = MovieDetailView()
     var movieId : Int?
@@ -32,22 +31,32 @@ class MovieDetailViewController: UIViewController {
         
         mainView.backDropView.showsHorizontalScrollIndicator = false
         mainView.backDropView.isPagingEnabled = true
+        
         setDelegate()
         navigationBarDesign()
         loadData()
-        setInfoView()
+        setInfoLabel()
         
-        mainView.pager.numberOfPages = backdropImg.count
+        
+        
+    }
+    @objc func backButtonTapped() {
+        navigationController?.popViewController(animated: true)
+    }
+    func setPager() {
+        mainView.pager.numberOfPages = min(backdropImg.count, 5)
         mainView.pager.currentPage = 0
         
         mainView.pager.pageIndicatorTintColor = .MyGray
         mainView.pager.currentPageIndicatorTintColor = .MylightGray
         mainView.pager.addTarget(self, action: #selector(pageChanged), for: .valueChanged)
-        
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        mainView.pagerBackView.layer.cornerRadius = mainView.pagerBackView.frame.height / 2
+        DispatchQueue.main.async {
+            self.mainView.updateViewLayout()
+        }
+        
     }
     @objc func pageChanged(_ sender: UIPageControl) {
         let indexPath = IndexPath(item: sender.currentPage, section: 0)
@@ -55,6 +64,9 @@ class MovieDetailViewController: UIViewController {
     }
     func navigationBarDesign() {
         navigationItem.title = movieTitle ?? "title"
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(backButtonTapped))
+        navigationItem.leftBarButtonItem?.tintColor = .MyBlue
         
         if UserDefaultsManager.shared.like.contains(movieId!) {
             navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "heart.fill"), style: .plain, target: self, action: #selector(heartButtonTappeed))
@@ -82,6 +94,7 @@ class MovieDetailViewController: UIViewController {
         mainView.posterView.delegate = self
         mainView.posterView.dataSource = self
     }
+    
     @objc func toggleSynopsis() {
         
         let shortHidden = mainView.synopsisShort.isHidden
@@ -125,37 +138,36 @@ class MovieDetailViewController: UIViewController {
         }
         group.notify(queue: .main) {
             self.mainView.backDropView.reloadData()
+            self.setPager()
             self.mainView.castView.reloadData()
             self.mainView.posterView.reloadData()
         }
     }
-    func setInfoView() {
+    func setInfoLabel() {
+
         let date = mainView.infoStackView.arrangedSubviews[0] as! UIButton
-        date.setAttributedTitle(NSAttributedString(string: (releaseDate ?? "None") + " | ", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 12) ,NSAttributedString.Key.foregroundColor : UIColor.MyGray]), for: .normal)
+        date.setButtonTitle(title: (releaseDate ?? "None") + " | ", color: UIColor.MyGray, size: 12)
         date.setImage(UIImage(systemName: "calendar"), for: .normal)
         date.tintColor = .MyGray
         date.isUserInteractionEnabled = false
         
         let tempRate = mainView.infoStackView.arrangedSubviews[1] as! UIButton
-        tempRate.setAttributedTitle(NSAttributedString(string: (rate ?? "None") + " |", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 12) ,NSAttributedString.Key.foregroundColor : UIColor.MyGray]), for: .normal)
+        tempRate.setButtonTitle(title: (rate ?? "None") + " |", color: UIColor.MyGray, size: 12)
         tempRate.setImage(UIImage(systemName: "star.fill"), for: .normal)
         tempRate.tintColor = .MyGray
         tempRate.isUserInteractionEnabled = false
         
-        
         let tempGenre = mainView.infoStackView.arrangedSubviews[2] as! UIButton
-        
         var genretotal = [String]()
 
         if let genre, genre.count > 0 {
-            let min = min(genre.count, 5) - 1
+            let min = min(genre.count, 2) - 1
             for i in 0...min {
                 genretotal.append(GenreManager.shared.getGenre(genre[i]) ?? "")
             }
         }
         let genreStr = genretotal.joined(separator: ",")
-
-        tempGenre.setAttributedTitle(NSAttributedString(string: genreStr, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 12) ,NSAttributedString.Key.foregroundColor : UIColor.MyGray]), for: .normal)
+        tempGenre.setButtonTitle(title: genreStr, color: UIColor.MyGray, size: 12)
         tempGenre.setImage(UIImage(systemName: "film.fill"), for: .normal)
         tempGenre.tintColor = .MyGray
         tempGenre.isUserInteractionEnabled = false
@@ -163,6 +175,7 @@ class MovieDetailViewController: UIViewController {
     
 
 }
+
 extension MovieDetailViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -196,9 +209,7 @@ extension MovieDetailViewController: UICollectionViewDelegate, UICollectionViewD
             
             return cell
         }
-
     }
-    
 }
 
 extension MovieDetailViewController: UIScrollViewDelegate {

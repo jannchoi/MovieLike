@@ -34,11 +34,20 @@ class ProfileSettingViewController: UIViewController {
         if fromProfileView {
             setNavigationBar()
             mainView.finishButton.isHidden = true
+            
         }
-        
+        else {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(backButtonTapped))
+            navigationItem.leftBarButtonItem?.tintColor = .MyBlue
+
+        }
+    }
+    @objc func backButtonTapped() {
+        dismiss(animated: true)
+
     }
     func setNavigationBar() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .plain, target: self, action: #selector(backToProfileTab))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .plain, target: self, action: #selector(backButtonTapped))
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "저장", style: .plain, target: self, action: #selector(saveProfile))
         navigationItem.rightBarButtonItem?.tintColor = .MyBlue
         navigationItem.leftBarButtonItem?.tintColor = .MyBlue
@@ -50,15 +59,12 @@ class ProfileSettingViewController: UIViewController {
         presentingViewController?.viewWillAppear(true)
         dismiss(animated: true)
     }
-    @objc func backToProfileTab() {
-        dismiss(animated: true)
-    }
     @objc func finishButtonClicked() {
         UserDefaultsManager.shared.nickname = mainView.nicknameTextField.text!
         UserDefaultsManager.shared.profileImage = initialImage
         UserDefaultsManager.shared.signDate = Date().DateToString()
         UserDefaultsManager.shared.used = true
-        print(#function, UserDefaultsManager.shared.used)
+
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let window = windowScene.windows.first else { return }
         let tabbar = TabBarController()
@@ -74,33 +80,15 @@ class ProfileSettingViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-            let border = CALayer()
-        border.frame = CGRect(x: 0, y: mainView.nicknameTextField.frame.size.height - 1, width: mainView.nicknameTextField.frame.size.width, height: 1)
-            border.borderColor = UIColor.white.cgColor
-            border.borderWidth = CGFloat(1.0)
-        mainView.nicknameTextField.layer.addSublayer(border)
-        mainView.nicknameTextField.layer.masksToBounds = true
-        mainView.nicknameTextField.textColor = .white
-
-        mainView.finishButton.layer.cornerRadius = mainView.finishButton.frame.height / 2
-        mainView.finishButton.clipsToBounds = true
-        mainView.finishButton.layer.borderWidth = 1
-        mainView.finishButton.layer.borderColor = UIColor.MyBlue.cgColor
-        
-        mainView.profileImageButton.layer.cornerRadius = mainView.profileImageButton.frame.height / 2
-        mainView.profileImageButton.clipsToBounds = true
-        mainView.profileImageButton.layer.borderWidth = 1
-        mainView.profileImageButton.layer.borderColor = UIColor.MyBlue.cgColor
-        
+        mainView.updateViewLayout()
         
     }
     override func viewWillAppear(_ animated: Bool) {
-        
         let userdefaults = UserDefaultsManager.shared
         
-        if initialImage == userdefaults.profileImage || userdefaults.profileImage == 0 { //p = 0, i==p | p = 0, nil
+        if initialImage == userdefaults.profileImage || userdefaults.profileImage == 0 {
             mainView.profileImageButton.setImage(UIImage(named: "profile_\(initialImage)"), for: .normal)
-        }else { //userdefaults에 저장되어 있을 때
+        }else {
             initialImage = userdefaults.profileImage
             mainView.profileImageButton.setImage(UIImage(named: "profile_\(initialImage)"), for: .normal)
         }

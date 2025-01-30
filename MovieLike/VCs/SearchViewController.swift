@@ -22,21 +22,45 @@ class SearchViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setDelegate()
+        navigationBarDesign()
+
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setFirstUI()
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        searchButtonClicked = false
+    }
+    func navigationBarDesign() {
+        let titleLabel = UILabel()
+        titleLabel.text = "영화 검색"
+        titleLabel.font = UIFont.boldSystemFont(ofSize: 16)
+        titleLabel.textColor = .white
+        navigationItem.titleView = titleLabel
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(backButtonTapped))
+        navigationItem.leftBarButtonItem?.tintColor = .MyBlue
+        
+    }
+    func setDelegate() {
         mainView.searchBar.delegate = self
         mainView.tableView.delegate = self
         mainView.tableView.dataSource = self
         mainView.tableView.prefetchDataSource = self
-        
-        setFirstUI()
+    }
+    @objc func backButtonTapped() {
+        navigationController?.popViewController(animated: true)
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        mainView.searchBar.layer.cornerRadius = 5
-        mainView.searchBar.clipsToBounds = true
+        mainView.updateViewLayout()
     }
     func setFirstUI() {
         if searchButtonClicked{
-            mainView.searchBar.resignFirstResponder()
+            mainView.searchBar.becomeFirstResponder()
             mainView.tableView.isHidden = true
             mainView.noSearchLabel.isHidden = true
         }
@@ -46,7 +70,15 @@ class SearchViewController: UIViewController {
         }
     }
     func loadData() {
+        let group = DispatchGroup()
+        
+        group.enter()
         NetworkManager.shared.callRequst(api: .searchMovie(query: inputText ?? "", page: page), model: SearchMovie.self) { value in
+            
+            if self.page > value.total_pages {
+                self.isEnd = true
+                return
+            }
             if value.results.isEmpty {
                 self.mainView.noSearchLabel.isHidden = false
                 self.mainView.tableView.isHidden = true
@@ -54,26 +86,26 @@ class SearchViewController: UIViewController {
             else {
                 self.mainView.noSearchLabel.isHidden = true
             }
+            
             if self.page == 1{
                 self.movieList = value.results
-                //self.mainView.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
             } else {
                 self.movieList.append(contentsOf: value.results)
             }
-            if self.page > value.total_pages {
-                self.isEnd = true
-            }
-            self.mainView.tableView.reloadData()
+            group.leave()
             
         } failHandler: {
-            
+            group.leave()
         }
-
+        group.notify(queue: .main) {
+            self.mainView.tableView.reloadData()
+        }
     }
 
 }
 extension SearchViewController: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        
         for item in indexPaths {
             if movieList.count - 4 <= item.row && isEnd == false {
                 page += 1
@@ -119,7 +151,7 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
         let item = movieList[indexPath.row]
         vc.movieId = item.id
         vc.releaseDate = item.release_date
-        vc.rate = String(item.vote_average)
+        vc.rate = String(item.vote_average ?? 0.0)
         vc.movieTitle = item.title
         vc.synopsis = item.overview
         vc.genre = item.genre_ids

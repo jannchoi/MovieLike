@@ -9,6 +9,7 @@ import Foundation
 
 class GenreManager {
     static let shared = GenreManager()
+    
     let genres: [Int: String] = [
             28: "액션",
             16: "애니메이션",

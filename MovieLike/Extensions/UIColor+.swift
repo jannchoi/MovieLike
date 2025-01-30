@@ -17,7 +17,6 @@ func hexColor(hex: String) -> UIColor {
     return UIColor(red: red, green: green, blue: blue, alpha: 1.0)
 }
 
-// UIColor 확장
 extension UIColor {
     static let MyBlue = hexColor(hex: "0099D6")
     static let MylightGray = hexColor(hex: "E1E1E1")

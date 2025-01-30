@@ -29,6 +29,7 @@ class TabBarController: UITabBarController {
         thirdVC.tabBarItem.image = UIImage(systemName: "person.crop.circle")
         setViewControllers([firstVC, secondVC, thirdVC], animated: true)
     }
+    
     func setupTabBarAppearence() {
         let appearence = UITabBarAppearance()
         appearence.stackedLayoutAppearance.selected.iconColor = .MyBlue

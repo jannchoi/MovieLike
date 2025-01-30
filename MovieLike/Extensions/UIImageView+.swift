@@ -14,8 +14,10 @@ extension UIImageView {
             let img = URL(string: url.imagePathFormat())
             self.kf.setImage(with: img)
         }else {
-            
-            self.image = UIImage(systemName: "star")?.withTintColor(.gray)
+            self.image = UIImage(systemName: "star")
+            self.tintColor = .gray
         }
     }
+    
+    
 }

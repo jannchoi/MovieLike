@@ -16,45 +16,43 @@ class ProfileViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        setDelegate()
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(profileViewTapped))
+        mainView.profileView.grayBackView.addGestureRecognizer(tapGesture)
+        
+    }
+    func setDelegate() {
         mainView.tableView.delegate = self
         mainView.tableView.dataSource = self
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(profileViewTapped))
-        mainView.grayBackView.addGestureRecognizer(tapGesture)
-        
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
         self.tabBarController?.navigationItem.title = "설정"
         self.tabBarController?.navigationItem.rightBarButtonItem = nil
-        setProfile()
+        mainView.profileView.updateProfile()
         mainView.tableView.reloadData()
         
     }
     @objc func profileViewTapped() {
+//        let appearance = UINavigationBarAppearance()
+//        appearance.configureWithOpaqueBackground()
+//        appearance.backgroundColor = .darkGray
+//        self.navigationController?.navigationBar.standardAppearance = appearance
+//        self.navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        
         let vc = ProfileSettingViewController()
         vc.fromProfileView = true
         let nav = UINavigationController(rootViewController: vc)
         present(nav, animated: true)
         
-    }
-    func setProfile() {
-        let data = UserDefaultsManager.shared
-        mainView.profileImage.image = UIImage(named: "profile_\(data.profileImage)")
-        mainView.nickname.text = data.nickname
-        mainView.dateLabel.text = data.signDate + " 가입"
-        mainView.movieboxButton.setButtonTitle(title: "\(data.like.count) 개의 무비박스 보관중", color: UIColor.white.cgColor, size: 17, weight: .bold)
+        
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        mainView.movieboxButton.layer.cornerRadius = 8
-        mainView.movieboxButton.clipsToBounds = true
-        
-        mainView.grayBackView.layer.cornerRadius = 8
-        mainView.profileImage.layer.cornerRadius = mainView.profileImage.frame.height / 2
-        mainView.profileImage.clipsToBounds = true
-        mainView.profileImage.layer.borderWidth = 1
-        mainView.profileImage.layer.borderColor = UIColor.MyBlue.cgColor
+        mainView.profileView.updateViewLayout()
         
     }
 
@@ -94,6 +92,8 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
             present(alert, animated: true)
             
         }
+        tableView.reloadData()
+
     }
     
 }

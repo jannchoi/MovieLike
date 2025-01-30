@@ -11,7 +11,10 @@ import SnapKit
 class ProfileImageSettingView: BaseView {
     
     let selectedImage = UIImageView()
+    let cameraSymbol = UIImageView()
+    let cameraBack = UIView()
     lazy var profileImages = UICollectionView(frame: .zero, collectionViewLayout: createCollectionViewLayout())
+    
     
     func createCollectionViewLayout() -> UICollectionViewLayout {
         let layout = UICollectionViewFlowLayout()
@@ -27,12 +30,22 @@ class ProfileImageSettingView: BaseView {
     override func configureHierachy() {
         addSubview(selectedImage)
         addSubview(profileImages)
+        addSubview(cameraBack)
+        addSubview(cameraSymbol)
     }
     override func configureLayout() {
         selectedImage.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide).offset(40)
             make.centerX.equalTo(safeAreaLayoutGuide)
-            make.size.equalTo(70)
+            make.size.equalTo(80)
+        }
+        cameraSymbol.snp.makeConstraints { make in
+            make.bottom.trailing.equalTo(selectedImage)
+            make.size.equalTo(27)
+        }
+        cameraBack.snp.makeConstraints { make in
+            make.center.equalTo(cameraSymbol)
+            make.size.equalTo(15)
         }
         
         profileImages.snp.makeConstraints { make in
@@ -45,5 +58,19 @@ class ProfileImageSettingView: BaseView {
         backgroundColor = .black
         profileImages.backgroundColor = .black
         profileImages.register(ProfileImageCollectionViewCell.self, forCellWithReuseIdentifier: ProfileImageCollectionViewCell.id)
+        
+        cameraSymbol.image = UIImage(systemName: "camera.circle.fill")
+        cameraSymbol.tintColor = .MyBlue
+        cameraBack.backgroundColor = .white
+        
+    }
+    func updateViewLayout() {
+        selectedImage.layer.cornerRadius = selectedImage.frame.height / 2
+        selectedImage.clipsToBounds = true
+        selectedImage.layer.borderWidth = 2
+        selectedImage.layer.borderColor = UIColor.MyBlue.cgColor
+        
+        cameraSymbol.layer.cornerRadius = cameraSymbol.frame.height / 2
+        cameraSymbol.clipsToBounds = true
     }
 }

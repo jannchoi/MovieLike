@@ -49,7 +49,7 @@ class OnboardingView: BaseView {
         onboardingLabel.labelDesign(inputText: "Onboarding", size: 27,weight: .bold, color: .white, alignment: .center)
         descriptionLabel.labelDesign(inputText: "당신만의 영화 세상, MovieLike를 시작해보세요.", size: 17, color: .white, alignment: .center)
 
-        startButton.setButtonTitle(title: "시작하기", color: UIColor.MyBlue.cgColor, size: 17, weight: .bold)
+        startButton.setButtonTitle(title: "시작하기", color: UIColor.MyBlue, size: 17, weight: .bold)
         startButton.backgroundColor = .black
         startButton.clipsToBounds = true
         startButton.layer.borderWidth = 1

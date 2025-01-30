@@ -47,4 +47,8 @@ class SearchView: BaseView {
         tableView.backgroundColor = .black
         
     }
+    func updateViewLayout() {
+        searchBar.layer.cornerRadius = 5
+        searchBar.clipsToBounds = true
+    }
 }

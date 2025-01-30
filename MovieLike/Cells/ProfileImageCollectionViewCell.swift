@@ -17,9 +17,11 @@ class ProfileImageCollectionViewCell: BaseCollectionViewCell {
         itemImage.image = UIImage(named: "profile_\(itemidx)")
         if itemidx == selected {
             itemImage.layer.borderColor = UIColor.MyBlue.cgColor
+            itemImage.layer.borderWidth = 2
             itemImage.alpha = 1.0
         } else {
             itemImage.layer.borderColor = UIColor.MyGray.cgColor
+            itemImage.layer.borderWidth = 1
             itemImage.alpha = 0.5
         }
     }

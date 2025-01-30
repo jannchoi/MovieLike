@@ -23,23 +23,24 @@ class ProfileImageSettingViewController: BaseViewController {
         navigationItem.titleView = titleLabel
         
         selectedItem = passData?(nil)
-        mainView.profileImages.delegate = self
-        mainView.profileImages.dataSource = self
+        setDelegate()
+        mainView.selectedImage.image = UIImage(named: "profile_\(selectedItem!)")
     
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(backToProfileSetting))
+        navigationItem.leftBarButtonItem?.tintColor = .MyBlue
+    }
+    func setDelegate() {
+        mainView.profileImages.delegate = self
+        mainView.profileImages.dataSource = self
     }
     @objc func backToProfileSetting() {
         UserDefaultsManager.shared.profileImage = selectedItem ?? 0
         passData?(selectedItem)
         navigationController?.popViewController(animated: true)
-        
     }
     override func viewDidLayoutSubviews() {
-        mainView.selectedImage.image = UIImage(named: "profile_\(selectedItem!)")
-        mainView.selectedImage.layer.cornerRadius = mainView.selectedImage.frame.height / 2
-        mainView.selectedImage.clipsToBounds = true
-        mainView.selectedImage.layer.borderWidth = 1
-        mainView.selectedImage.layer.borderColor = UIColor.MyBlue.cgColor
+        super.viewDidLayoutSubviews()
+        mainView.updateViewLayout()
     }
 
 

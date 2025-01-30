@@ -19,35 +19,13 @@ class TodayMoviesCollectionViewCell: BaseCollectionViewCell {
     let heartButton = UIButton()
     
     func configureData(item: MovieDetail) {
-        if let url = item.poster_path {
-            let img = URL(string: url.imagePathFormat())
-           posterImage.kf.setImage(with: img)
-        } else {
-            posterImage.image = UIImage(systemName: "star")
-        }
+        posterImage.setOptionalImage(imgPath: item.poster_path)
         title.text = item.title
         descriptionLabel.text = item.overview
         heartButton.tag = item.id
-        if UserDefaultsManager.shared.like.contains(heartButton.tag) {
-            heartButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-        } else {
-            heartButton.setImage(UIImage(systemName: "heart"), for: .normal)
-        }
-
+        heartButton.setHeartButton()
     }
     
-    @objc func heartButtonTapped1(_ sender:  UIButton) {
-        if let idx = UserDefaultsManager.shared.like.firstIndex(of: sender.tag) {
-            //만약에 값을 가지고 있다면, 제거, 빈 하트
-            UserDefaultsManager.shared.like.remove(at: idx)
-            heartButton.setImage(UIImage(systemName: "heart"), for: .normal)
-            print(sender.tag, "heart")
-        } else { // 값이 없다면, 추가, 꽉찬 하트
-            UserDefaultsManager.shared.like.append(sender.tag)
-            heartButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-            print(sender.tag, "heart.fill")
-        }
-    }
     override func configureHierachy() {
         contentView.addSubview(posterImage)
         contentView.addSubview(title)
@@ -83,7 +61,7 @@ class TodayMoviesCollectionViewCell: BaseCollectionViewCell {
         title.labelDesign(inputText: "title", size: 16, weight: .bold, color: .white)
         descriptionLabel.labelDesign(inputText: "description", size: 12, color: .white, lines: 2)
         heartButton.tintColor = .MyBlue
-        heartButton.addTarget(self, action: #selector(heartButtonTapped1), for: .touchUpInside)
+        heartButton.addTargetToHeartButton()
     }
     
 }
