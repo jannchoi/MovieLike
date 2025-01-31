@@ -18,14 +18,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if UserDefaultsManager.shared.used {
             let tabbar = TabBarController()
             let nav = UINavigationController(rootViewController: tabbar)
-            let appearance = UINavigationBarAppearance()
-            appearance.backgroundColor = .black
-                appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
-                nav.navigationBar.standardAppearance = appearance
-                nav.navigationBar.scrollEdgeAppearance = appearance
+            nav.setBarAppearance()
                 window?.rootViewController = nav
         }
-        
         else {
             window?.rootViewController = UINavigationController(rootViewController: OnboardingViewController())
         }

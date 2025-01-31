@@ -8,14 +8,14 @@
 import UIKit
 import SnapKit
 
-class ProfileSettingView: BaseView {
+final class ProfileSettingView: BaseView {
     
     let profileImageButton = UIButton()
     let nicknameTextField = UITextField()
     let descriptionLabel = UILabel()
     let finishButton = UIButton()
     let cameraSymbol = UIImageView()
-    let cameraBack = UIView()
+    private let cameraBack = UIView()
     
     
     override func configureHierachy() {
@@ -83,7 +83,7 @@ class ProfileSettingView: BaseView {
         
         profileImageButton.layer.cornerRadius = profileImageButton.frame.height / 2
         profileImageButton.clipsToBounds = true
-        profileImageButton.layer.borderWidth = 2
+        profileImageButton.layer.borderWidth = 3
         profileImageButton.layer.borderColor = UIColor.MyBlue.cgColor
         
         cameraSymbol.layer.cornerRadius = cameraSymbol.frame.height / 2

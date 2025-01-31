@@ -8,9 +8,9 @@
 import UIKit
 import SnapKit
 
-class PosterCollectionViewCell: BaseCollectionViewCell {
+final class PosterCollectionViewCell: BaseCollectionViewCell {
     static let id = "PosterCollectionViewCell"
-    let posterImage = UIImageView()
+    private let posterImage = UIImageView()
     
     func configureData(item: FileDetail) {
         posterImage.setOptionalImage(imgPath: item.file_path)

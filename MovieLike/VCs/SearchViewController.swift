@@ -7,14 +7,14 @@
 
 import UIKit
 
-class SearchViewController: UIViewController {
+final class SearchViewController: UIViewController {
 
     let mainView = SearchView()
     var inputText : String?
     var searchButtonClicked = false
-    var page: Int = 1
-    var movieList = [MovieDetail]()
-    var isEnd = false
+    private var page: Int = 1
+    private var movieList = [MovieDetail]()
+    private var isEnd = false
     
     override func loadView() {
         view = mainView
@@ -29,23 +29,20 @@ class SearchViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setFirstUI()
+
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         searchButtonClicked = false
     }
-    func navigationBarDesign() {
-        let titleLabel = UILabel()
-        titleLabel.text = "영화 검색"
-        titleLabel.font = UIFont.boldSystemFont(ofSize: 16)
-        titleLabel.textColor = .white
-        navigationItem.titleView = titleLabel
+    private func navigationBarDesign() {
+        navigationItem.setBarTitleView(title: "영화 검색")
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(backButtonTapped))
         navigationItem.leftBarButtonItem?.tintColor = .MyBlue
         
     }
-    func setDelegate() {
+    private func setDelegate() {
         mainView.searchBar.delegate = self
         mainView.tableView.delegate = self
         mainView.tableView.dataSource = self
@@ -58,7 +55,7 @@ class SearchViewController: UIViewController {
         super.viewDidLayoutSubviews()
         mainView.updateViewLayout()
     }
-    func setFirstUI() {
+    private func setFirstUI() {
         if searchButtonClicked{
             mainView.searchBar.becomeFirstResponder()
             mainView.tableView.isHidden = true
@@ -69,11 +66,10 @@ class SearchViewController: UIViewController {
             loadData()
         }
     }
-    func loadData() {
+    private func loadData() {
         let group = DispatchGroup()
-        
         group.enter()
-        NetworkManager.shared.callRequst(api: .searchMovie(query: inputText ?? "", page: page), model: SearchMovie.self) { value in
+        NetworkManager.shared.callRequst(api: .searchMovie(query: inputText ?? "", page: page), model: SearchMovie.self, vc: self) { value in
             
             if self.page > value.total_pages {
                 self.isEnd = true
@@ -101,7 +97,6 @@ class SearchViewController: UIViewController {
             self.mainView.tableView.reloadData()
         }
     }
-
 }
 extension SearchViewController: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
@@ -136,16 +131,16 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: SearchTableViewCell.id) as! SearchTableViewCell
-        
-        cell.configureData(item: movieList[indexPath.row])
+        if let inputTxt = mainView.searchBar.text {
+            cell.configureData(item: movieList[indexPath.row], txt: inputTxt)
+        }
+
         return cell
         
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 120
     }
-    
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc = MovieDetailViewController()
         let item = movieList[indexPath.row]

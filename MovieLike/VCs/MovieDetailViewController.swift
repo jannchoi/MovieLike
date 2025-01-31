@@ -7,8 +7,8 @@
 
 import UIKit
 
-class MovieDetailViewController: UIViewController {
-    let mainView = MovieDetailView()
+final class MovieDetailViewController: UIViewController {
+    private let mainView = MovieDetailView()
     var movieId : Int?
 
     var releaseDate : String?
@@ -16,9 +16,9 @@ class MovieDetailViewController: UIViewController {
     var genre : [Int]?
     var movieTitle: String?
     var synopsis : String?
-    var backdropImg = [FileDetail]()
-    var posterImage = [FileDetail]()
-    var castList = [CastDetail]()
+    private var backdropImg = [FileDetail]()
+    private var posterImage = [FileDetail]()
+    private var castList = [CastDetail]()
     
     override func loadView() {
         view = mainView
@@ -43,7 +43,7 @@ class MovieDetailViewController: UIViewController {
     @objc func backButtonTapped() {
         navigationController?.popViewController(animated: true)
     }
-    func setPager() {
+    private func setPager() {
         mainView.pager.numberOfPages = min(backdropImg.count, 5)
         mainView.pager.currentPage = 0
         
@@ -62,31 +62,17 @@ class MovieDetailViewController: UIViewController {
         let indexPath = IndexPath(item: sender.currentPage, section: 0)
         mainView.backDropView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
     }
-    func navigationBarDesign() {
+    
+    private func navigationBarDesign() {
         navigationItem.title = movieTitle ?? "title"
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(backButtonTapped))
         navigationItem.leftBarButtonItem?.tintColor = .MyBlue
-        
-        if UserDefaultsManager.shared.like.contains(movieId!) {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "heart.fill"), style: .plain, target: self, action: #selector(heartButtonTappeed))
-        } else {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "heart"), style: .plain, target: self, action: #selector(heartButtonTappeed))
-        }
-        
-        navigationItem.rightBarButtonItem?.tintColor = .MyBlue
+        guard let movieId else {return}
+        navigationItem.setHeartButton(movieId)
     }
-    @objc func heartButtonTappeed() {
-        if let idx = UserDefaultsManager.shared.like.firstIndex(of: movieId!) {
-            
-            UserDefaultsManager.shared.like.remove(at: idx)
-            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "heart"), style: .plain, target: self, action: #selector(heartButtonTappeed))
-        } else {
-            UserDefaultsManager.shared.like.append(movieId!)
-            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "heart.fill"), style: .plain, target: self, action: #selector(heartButtonTappeed))
-        }
-    }
-    func setDelegate() {
+
+    private func setDelegate() {
         mainView.backDropView.delegate = self
         mainView.backDropView.dataSource = self
         mainView.castView.delegate = self
@@ -102,14 +88,14 @@ class MovieDetailViewController: UIViewController {
         mainView.synopsisLong.isHidden = shortHidden
         
         if mainView.synopsisShort.isHidden {
-            mainView.moreButton.setTitle("Hide", for: .normal)
+            mainView.moreButton.setButtonTitle(title: "Hide", color: .MyBlue, size: 14, weight: .bold)
             mainView.castLabel.snp.remakeConstraints { make in
                 make.top.equalTo(mainView.synopsisLong.snp.bottom).offset(16)
                 make.leading.equalTo(view.safeAreaLayoutGuide).offset(8)
                 make.height.equalTo(20)
             }
         } else {
-            mainView.moreButton.setTitle("More", for: .normal)
+            mainView.moreButton.setButtonTitle(title: "More", color: .MyBlue, size: 14, weight: .bold)
             mainView.castLabel.snp.remakeConstraints { make in
                 make.top.equalTo(mainView.synopsisShort.snp.bottom).offset(16)
                 make.leading.equalTo(view.safeAreaLayoutGuide).offset(8)
@@ -118,11 +104,11 @@ class MovieDetailViewController: UIViewController {
         }
         view.layoutIfNeeded()
     }
-    func loadData() {
+    private func loadData() {
         guard let movieId else {return}
         let group = DispatchGroup()
         group.enter()
-        NetworkManager.shared.callRequst(api: .movieImage(id: movieId), model: MovieImage.self) { value in
+        NetworkManager.shared.callRequst(api: .movieImage(id: movieId), model: MovieImage.self, vc: self) { value in
             self.backdropImg = value.backdrops
             self.posterImage = value.posters
             group.leave()
@@ -130,7 +116,7 @@ class MovieDetailViewController: UIViewController {
             group.leave()
         }
         group.enter()
-        NetworkManager.shared.callRequst(api: .cast(id: movieId), model: MovieCredit.self) { value in
+        NetworkManager.shared.callRequst(api: .cast(id: movieId), model: MovieCredit.self, vc: self) { value in
             self.castList = value.cast
             group.leave()
         } failHandler: {
@@ -143,16 +129,17 @@ class MovieDetailViewController: UIViewController {
             self.mainView.posterView.reloadData()
         }
     }
-    func setInfoLabel() {
+    
+    private func setInfoLabel() {
 
         let date = mainView.infoStackView.arrangedSubviews[0] as! UIButton
-        date.setButtonTitle(title: (releaseDate ?? "None") + " | ", color: UIColor.MyGray, size: 12)
+        date.setButtonTitle(title: (releaseDate ?? "None") + "   | ", color: UIColor.MyGray, size: 12)
         date.setImage(UIImage(systemName: "calendar"), for: .normal)
         date.tintColor = .MyGray
         date.isUserInteractionEnabled = false
         
         let tempRate = mainView.infoStackView.arrangedSubviews[1] as! UIButton
-        tempRate.setButtonTitle(title: (rate ?? "None") + " |", color: UIColor.MyGray, size: 12)
+        tempRate.setButtonTitle(title: (rate ?? "None") + "   | ", color: UIColor.MyGray, size: 12)
         tempRate.setImage(UIImage(systemName: "star.fill"), for: .normal)
         tempRate.tintColor = .MyGray
         tempRate.isUserInteractionEnabled = false

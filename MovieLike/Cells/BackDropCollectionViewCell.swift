@@ -8,10 +8,10 @@
 import UIKit
 import SnapKit
 
-class BackDropCollectionViewCell: BaseCollectionViewCell {
+final class BackDropCollectionViewCell: BaseCollectionViewCell {
     static let id = "BackDropCollectionViewCell"
     
-    let itemImage = UIImageView()
+    private let itemImage = UIImageView()
     func configureData(item: FileDetail) {
 
         itemImage.setOptionalImage(imgPath: item.file_path)

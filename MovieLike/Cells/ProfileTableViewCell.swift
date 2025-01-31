@@ -8,10 +8,10 @@
 import UIKit
 import SnapKit
 
-class ProfileTableViewCell: BaseTableViewCell {
+final class ProfileTableViewCell: BaseTableViewCell {
 
     static let id = "ProfileTableViewCell"
-    let titleLabel = UILabel()
+    private let titleLabel = UILabel()
     
     func configureData(inputText: String) {
         titleLabel.text = inputText

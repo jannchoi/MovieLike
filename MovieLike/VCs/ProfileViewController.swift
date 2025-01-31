@@ -7,10 +7,10 @@
 
 import UIKit
 
-class ProfileViewController: UIViewController {
+final class ProfileViewController: UIViewController {
 
-    let mainView = ProfileView()
-    let category = ["자주 묻는 질문", "1:1문의", "알림 설정", "탈퇴하기"]
+    private let mainView = ProfileView()
+    private let category = ["자주 묻는 질문", "1:1문의", "알림 설정", "탈퇴하기"]
     override func loadView() {
         view = mainView
     }
@@ -22,7 +22,7 @@ class ProfileViewController: UIViewController {
         mainView.profileView.grayBackView.addGestureRecognizer(tapGesture)
         
     }
-    func setDelegate() {
+    private func setDelegate() {
         mainView.tableView.delegate = self
         mainView.tableView.dataSource = self
     }
@@ -36,15 +36,10 @@ class ProfileViewController: UIViewController {
         
     }
     @objc func profileViewTapped() {
-//        let appearance = UINavigationBarAppearance()
-//        appearance.configureWithOpaqueBackground()
-//        appearance.backgroundColor = .darkGray
-//        self.navigationController?.navigationBar.standardAppearance = appearance
-//        self.navigationController?.navigationBar.scrollEdgeAppearance = appearance
-        
         let vc = ProfileSettingViewController()
-        vc.fromProfileView = true
+        vc.editProfile = true
         let nav = UINavigationController(rootViewController: vc)
+        nav.sheetPresentationController?.prefersGrabberVisible = true
         present(nav, animated: true)
         
         
@@ -54,6 +49,11 @@ class ProfileViewController: UIViewController {
         super.viewDidLayoutSubviews()
         mainView.profileView.updateViewLayout()
         
+    }
+    func resetUserdefaults() {
+        for key in UserDefaults.standard.dictionaryRepresentation().keys {
+            UserDefaults.standard.removeObject(forKey: key.description)
+        }
     }
 
 }
@@ -70,11 +70,7 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 50
     }
-    func resetUserdefaults() {
-        for key in UserDefaults.standard.dictionaryRepresentation().keys {
-            UserDefaults.standard.removeObject(forKey: key.description)
-        }
-    }
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row == 3 {
             let alert = UIAlertController(title: "탈퇴하기", message: "탈퇴를 하면 데이터가 모두 초기화됩니다. 탈퇴 하시겠습니까?", preferredStyle: .alert)

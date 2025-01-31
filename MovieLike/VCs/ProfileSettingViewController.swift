@@ -6,60 +6,72 @@
 //
 
 import UIKit
+final class ProfileSettingViewController: UIViewController {
 
-class ProfileSettingViewController: UIViewController {
-
-    let mainView = ProfileSettingView()
+    private let mainView = ProfileSettingView()
     var initialImage = Int.random(in: 0...11)
-    var fromProfileView = false
+    var editProfile = false
     override func loadView() {
         view = mainView
     }
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let titleLabel = UILabel()
-        titleLabel.text = "프로필 설정"
-        titleLabel.textColor = .white
-        navigationItem.titleView = titleLabel
-
+        navigationItem.setBarTitleView(title: "프로필 설정")
         mainView.finishButton.addTarget(self, action: #selector(finishButtonClicked), for: .touchUpInside)
         
-        mainView.nicknameTextField.resignFirstResponder()
+        mainView.nicknameTextField.becomeFirstResponder()
         mainView.nicknameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         mainView.nicknameTextField.delegate = self
         
         mainView.profileImageButton.addTarget(self, action: #selector(profileImageTapped), for: .touchUpInside)
         
-        if fromProfileView {
+        if editProfile {
             setNavigationBar()
             mainView.finishButton.isHidden = true
-            
         }
         else {
             navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(backButtonTapped))
             navigationItem.leftBarButtonItem?.tintColor = .MyBlue
-
+        }
+        
+        setProfileImage()
+        
+    }
+    private func setProfileImage() {
+        let userdefaults = UserDefaultsManager.shared
+        
+        if initialImage == userdefaults.profileImage || userdefaults.profileImage == 0 {
+            mainView.profileImageButton.setImage(UIImage(named: "profile_\(initialImage)"), for: .normal)
+        } else {
+            initialImage = userdefaults.profileImage
+            mainView.profileImageButton.setImage(UIImage(named: "profile_\(initialImage)"), for: .normal)
         }
     }
     @objc func backButtonTapped() {
         dismiss(animated: true)
 
     }
-    func setNavigationBar() {
+    private func setNavigationBar() {
+        navigationItem.setBarTitleView(title: "프로필 편집")
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .plain, target: self, action: #selector(backButtonTapped))
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "저장", style: .plain, target: self, action: #selector(saveProfile))
         navigationItem.rightBarButtonItem?.tintColor = .MyBlue
         navigationItem.leftBarButtonItem?.tintColor = .MyBlue
+        
     }
     
     @objc func saveProfile() {
-        UserDefaultsManager.shared.nickname = mainView.nicknameTextField.text!
-        UserDefaultsManager.shared.profileImage = initialImage
-        presentingViewController?.viewWillAppear(true)
-        dismiss(animated: true)
+        if mainView.finishButton.isEnabled {
+            UserDefaultsManager.shared.nickname = mainView.nicknameTextField.text!
+            UserDefaultsManager.shared.profileImage = initialImage
+            presentingViewController?.viewWillAppear(true)
+            dismiss(animated: true)
+        }
+
     }
     @objc func finishButtonClicked() {
+        
         UserDefaultsManager.shared.nickname = mainView.nicknameTextField.text!
         UserDefaultsManager.shared.profileImage = initialImage
         UserDefaultsManager.shared.signDate = Date().DateToString()
@@ -69,13 +81,9 @@ class ProfileSettingViewController: UIViewController {
               let window = windowScene.windows.first else { return }
         let tabbar = TabBarController()
         let nav = UINavigationController(rootViewController: tabbar)
-        let appearance = UINavigationBarAppearance()
-        appearance.backgroundColor = .black
-            appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
-            nav.navigationBar.standardAppearance = appearance
-            nav.navigationBar.scrollEdgeAppearance = appearance
-            window.rootViewController = nav
-            window.makeKeyAndVisible()
+        nav.setBarAppearance()
+        window.rootViewController = nav
+        window.makeKeyAndVisible()
     }
     
     override func viewDidLayoutSubviews() {
@@ -85,13 +93,6 @@ class ProfileSettingViewController: UIViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         let userdefaults = UserDefaultsManager.shared
-        
-        if initialImage == userdefaults.profileImage || userdefaults.profileImage == 0 {
-            mainView.profileImageButton.setImage(UIImage(named: "profile_\(initialImage)"), for: .normal)
-        }else {
-            initialImage = userdefaults.profileImage
-            mainView.profileImageButton.setImage(UIImage(named: "profile_\(initialImage)"), for: .normal)
-        }
         
         if userdefaults.nickname != "" {
             mainView.nicknameTextField.text = userdefaults.nickname
@@ -104,18 +105,20 @@ class ProfileSettingViewController: UIViewController {
         vc.passData = { data in
             if let data {
                 self.initialImage = data
+                self.mainView.profileImageButton.setImage(UIImage(named: "profile_\(data)"), for: .normal)
             } else {
                 return self.initialImage
             }
             return nil
         }
+        vc.editProfile = editProfile
         navigationController?.pushViewController(vc, animated: true)
     }
     
     @objc func textFieldDidChange() {
         isValidNickname()
     }
-    func isValidNickname() {
+    private func isValidNickname() {
         guard let input = mainView.nicknameTextField.text else {return}
         let trimmedInput = input.trimmingCharacters(in: .whitespacesAndNewlines)
         var description : String

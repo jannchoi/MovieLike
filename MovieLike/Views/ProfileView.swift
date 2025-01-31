@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class ProfileView: BaseView {
+final class ProfileView: BaseView {
     let profileView = ProfileBaseView()
     let tableView = UITableView()
     
@@ -19,7 +19,7 @@ class ProfileView: BaseView {
     override func configureLayout() {
         profileView.snp.makeConstraints { make in
             make.top.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(8)
-            make.height.equalTo(140)
+            make.height.equalTo(136)
         }
         tableView.snp.makeConstraints { make in
             make.top.equalTo(profileView.snp.bottom).offset(16)

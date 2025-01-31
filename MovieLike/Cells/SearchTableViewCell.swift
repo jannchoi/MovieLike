@@ -7,24 +7,23 @@
 
 import UIKit
 import SnapKit
-import Kingfisher
 
-class SearchTableViewCell: BaseTableViewCell {
+
+final class SearchTableViewCell: BaseTableViewCell {
 
     static let id = "SearchTableViewCell"
     
-    let posterImage = UIImageView()
-    let titleLable = UILabel()
-    let dateLabel = UILabel()
-    let genreStack = UIStackView()
+    private let posterImage = UIImageView()
+    private let titleLable = UILabel()
+    private let dateLabel = UILabel()
+    private let genreStack = UIStackView()
     let heartButton = UIButton()
     
-    func configureData(item: MovieDetail) {
-        
+    func configureData(item: MovieDetail, txt: String) {
 
         posterImage.setOptionalImage(imgPath: item.poster_path)
         titleLable.labelDesign(inputText: item.title, size: 14, weight: .bold, color: .white, lines: 2)
-        
+        titleLable.ColoringSubString(subString: txt)
         dateLabel.labelDesign(inputText: item.release_date?.dateFormat() ?? "None", size: 12, color: .MylightGray)
         
         heartButton.tag = item.id
@@ -34,7 +33,7 @@ class SearchTableViewCell: BaseTableViewCell {
         configGenre(ids: item.genre_ids)
         
     }
-    func configGenre(ids: [Int]) {
+    private func configGenre(ids: [Int]) {
         
         genreStack.arrangedSubviews.forEach { (view) in
             genreStack.removeArrangedSubview(view)
@@ -99,7 +98,7 @@ class SearchTableViewCell: BaseTableViewCell {
         }
     }
     override func configureView() {
-        backgroundColor = .black
+        backgroundColor = .clear
         heartButton.addTargetToHeartButton()
         genreStack.spacing = 5
         genreStack.axis = .horizontal

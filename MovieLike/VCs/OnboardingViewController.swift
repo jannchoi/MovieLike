@@ -7,15 +7,14 @@
 
 import UIKit
 
-class OnboardingViewController: UIViewController {
+final class OnboardingViewController: UIViewController {
 
-    let mainView = OnboardingView()
+    private let mainView = OnboardingView()
     override func loadView() {
         view = mainView
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-
         mainView.startButton.addTarget(self, action: #selector(startButtonTapped), for: .touchUpInside)
     }
     

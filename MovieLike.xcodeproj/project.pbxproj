@@ -11,6 +11,7 @@
 		CE4296C12D461F2400152B3A /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = CE4296C02D461F2400152B3A /* Alamofire */; };
 		CE4296C42D461F2B00152B3A /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = CE4296C32D461F2B00152B3A /* Kingfisher */; };
 		CE4297412D463D9D00152B3A /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = CE4297402D463D9D00152B3A /* .gitignore */; };
+		CE52B1C82D4D290700AB893D /* SkeletonView in Frameworks */ = {isa = PBXBuildFile; productRef = CE52B1C72D4D290700AB893D /* SkeletonView */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE52B1C82D4D290700AB893D /* SkeletonView in Frameworks */,
 				CE4296C42D461F2B00152B3A /* Kingfisher in Frameworks */,
 				CE4296BE2D461F1800152B3A /* SnapKit in Frameworks */,
 				CE4296C12D461F2400152B3A /* Alamofire in Frameworks */,
@@ -93,6 +95,7 @@
 				CE4296BD2D461F1800152B3A /* SnapKit */,
 				CE4296C02D461F2400152B3A /* Alamofire */,
 				CE4296C32D461F2B00152B3A /* Kingfisher */,
+				CE52B1C72D4D290700AB893D /* SkeletonView */,
 			);
 			productName = MovieLike;
 			productReference = CE4296582D461A1800152B3A /* MovieLike.app */;
@@ -126,6 +129,7 @@
 				CE4296BC2D461F1800152B3A /* XCRemoteSwiftPackageReference "SnapKit" */,
 				CE4296BF2D461F2400152B3A /* XCRemoteSwiftPackageReference "Alamofire" */,
 				CE4296C22D461F2B00152B3A /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				CE52B1C62D4D290700AB893D /* XCRemoteSwiftPackageReference "SkeletonView" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CE4296592D461A1800152B3A /* Products */;
@@ -168,12 +172,13 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MovieLike/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "최정안";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -200,12 +205,13 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MovieLike/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "최정안";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -390,6 +396,14 @@
 				minimumVersion = 8.1.3;
 			};
 		};
+		CE52B1C62D4D290700AB893D /* XCRemoteSwiftPackageReference "SkeletonView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Juanpe/SkeletonView.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.31.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -407,6 +421,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CE4296C22D461F2B00152B3A /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		CE52B1C72D4D290700AB893D /* SkeletonView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE52B1C62D4D290700AB893D /* XCRemoteSwiftPackageReference "SkeletonView" */;
+			productName = SkeletonView;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

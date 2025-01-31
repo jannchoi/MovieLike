@@ -8,10 +8,10 @@
 import UIKit
 import SnapKit
 
-class SearchWordsCollectionViewCell: BaseCollectionViewCell {
+final class SearchWordsCollectionViewCell: BaseCollectionViewCell {
     
     static let id = "SearchWordsCollectionViewCell"
-    let word = UILabel()
+    private let word = UILabel()
     let xButton = UIButton()
     
     func configureData(item: Int) {

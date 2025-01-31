@@ -8,16 +8,16 @@
 import UIKit
 import SnapKit
 
-class ProfileImageCollectionViewCell: BaseCollectionViewCell {
+final class ProfileImageCollectionViewCell: BaseCollectionViewCell {
     
     static let id = "ProfileImageCollectionViewCell"
-    let itemImage = UIImageView()
+    private let itemImage = UIImageView()
     
     func configImage(itemidx : Int, selected: Int) {
         itemImage.image = UIImage(named: "profile_\(itemidx)")
         if itemidx == selected {
             itemImage.layer.borderColor = UIColor.MyBlue.cgColor
-            itemImage.layer.borderWidth = 2
+            itemImage.layer.borderWidth = 3
             itemImage.alpha = 1.0
         } else {
             itemImage.layer.borderColor = UIColor.MyGray.cgColor
@@ -40,7 +40,6 @@ class ProfileImageCollectionViewCell: BaseCollectionViewCell {
         DispatchQueue.main.async {
             self.itemImage.layer.cornerRadius = self.itemImage.frame.height / 2
             self.itemImage.clipsToBounds = true
-            self.itemImage.layer.borderWidth = 1
         }
 
     }

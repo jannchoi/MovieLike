@@ -7,9 +7,9 @@
 
 import UIKit
 
-class CinemaViewController: UIViewController {
-    let mainView = CinemaView()
-    var trendMovieList = [MovieDetail]()
+final class CinemaViewController: UIViewController {
+    private let mainView = CinemaView()
+    private var trendMovieList = [MovieDetail]()
     
     override func loadView() {
         view = mainView
@@ -17,14 +17,13 @@ class CinemaViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         setDelegate()
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(profileViewTapped))
         mainView.profileView.grayBackView.addGestureRecognizer(tapGesture)
         mainView.deleteButton.addTarget(self, action: #selector(resetSearchedTerm), for: .touchUpInside)
 
     }
-    func setDelegate() {
+    private func setDelegate() {
         mainView.searchedWords.delegate = self
         mainView.searchedWords.dataSource = self
 
@@ -41,13 +40,13 @@ class CinemaViewController: UIViewController {
 
     @objc func profileViewTapped() {
         let vc = ProfileSettingViewController()
+        vc.editProfile = true
         let nav = UINavigationController(rootViewController: vc)
         nav.modalPresentationStyle = .fullScreen
         present(nav, animated: true)
     }
-    func navigationBarDesign() {
+    private func navigationBarDesign() {
         self.tabBarController?.navigationItem.title = "오늘의 영화"
-        
         self.tabBarController?.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .plain, target: self, action: #selector(searchButtonTapped))
         self.tabBarController?.navigationItem.rightBarButtonItem?.tintColor = .MyBlue
     }
@@ -61,7 +60,7 @@ class CinemaViewController: UIViewController {
         
     }
     
-    func switchSearchedTermView() {
+    private func switchSearchedTermView() {
         if UserDefaultsManager.shared.searchedTerm.isEmpty {
             mainView.noSearchedWord.isHidden = false
             mainView.searchedWords.isHidden = true
@@ -76,14 +75,13 @@ class CinemaViewController: UIViewController {
         vc.searchButtonClicked = true
         navigationController?.pushViewController(vc, animated: true)
     }
-    func loadData() {
+    private func loadData() {
         let group = DispatchGroup()
         group.enter()
-        NetworkManager.shared.callRequst(api: .todayMovie, model: TrendMovie.self) { value in
+        NetworkManager.shared.callRequst(api: .todayMovie, model: TrendMovie.self, vc: self) { value in
             self.trendMovieList = value.results
             group.leave()
         } failHandler: {
-            print("fail")
             group.leave()
         }
         group.notify(queue: .main) {
@@ -100,7 +98,7 @@ class CinemaViewController: UIViewController {
         
     }
     
-    func movieCollectionLayout() {
+    private func movieCollectionLayout() {
         if let layout = mainView.movieCollection.collectionViewLayout as? UICollectionViewFlowLayout {
             let sectionInset: CGFloat = 1
             let cellHeight = mainView.movieCollection.frame.height
@@ -108,6 +106,7 @@ class CinemaViewController: UIViewController {
             layout.sectionInset = UIEdgeInsets(top: 0, left: sectionInset, bottom: 0, right: sectionInset)
             layout.invalidateLayout()
         }
+        
     }
 
     @objc func xButtonTapped(_ sender: UIButton) {
@@ -117,6 +116,7 @@ class CinemaViewController: UIViewController {
 
     }
     @objc func updateMoviebox() {
+
         mainView.profileView.movieboxButton.setButtonTitle(title: "\(UserDefaultsManager.shared.like.count) 개의 무비박스 보관중", color: UIColor.white, size: 17, weight: .bold)
     }
 }
@@ -165,7 +165,7 @@ extension CinemaViewController: UICollectionViewDelegate, UICollectionViewDataSo
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-    
-    
+
     
 }
+

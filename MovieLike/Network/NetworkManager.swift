@@ -5,7 +5,7 @@
 //  Created by 최정안 on 1/27/25.
 //
 
-import Foundation
+import UIKit
 import Alamofire
 
 enum TMDBRequest {
@@ -41,15 +41,32 @@ class NetworkManager {
     static let shared = NetworkManager()
     private init() { }
     
-    func callRequst<T: Decodable>(api: TMDBRequest, model: T.Type, completionHandler: @escaping(T) -> Void, failHandler: @escaping () -> Void) {
+    func callRequst<T: Decodable>(api: TMDBRequest, model: T.Type,vc: UIViewController, completionHandler: @escaping(T) -> Void, failHandler: @escaping () -> Void) {
+        
         AF.request(api.endpoint, method: api.method, headers: api.header)
+            .validate(statusCode: 200...200)
             .responseDecodable(of: T.self) { response in
                 switch response.result {
                 case .success(let value):
                     completionHandler(value)
                 case .failure(let error) :
+                    let alert = UIAlertController(title: "오류", message: self.getErrorMessage(code: response.response?.statusCode ?? 501), preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "확인", style: .cancel))
+                    vc.present(alert, animated: true)
                     print(error)
                 }
             }
+    }
+    
+    private func getErrorMessage(code: Int) -> String{
+        switch code {
+        case 400 : return NetworkError.badRequest.errorMessage
+        case 401 : return NetworkError.unauthorized.errorMessage
+        case 403 : return NetworkError.forbidden.errorMessage
+        case 404 : return NetworkError.notFound.errorMessage
+        case 500 : return NetworkError.serverError.errorMessage
+        default :
+            return "Unknown error"
+        }
     }
 }

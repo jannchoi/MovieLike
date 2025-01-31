@@ -8,11 +8,11 @@
 import UIKit
 import SnapKit
 
-class MovieDetailView: BaseView {
-    let scrollView = UIScrollView()
+final class MovieDetailView: BaseView {
+    private let scrollView = UIScrollView()
     lazy var backDropView = UICollectionView(frame: .zero, collectionViewLayout: backDropLayout())
     let pager = UIPageControl()
-    let pagerBackView = UIView()
+    private let pagerBackView = UIView()
     let infoStackView = UIStackView()
     let dateLabel = UIButton()
     let rateLabel = UIButton()
@@ -94,7 +94,7 @@ class MovieDetailView: BaseView {
             make.centerX.equalTo(safeAreaLayoutGuide)
             make.centerY.equalTo(pager)
             make.height.equalTo(pager).inset(2)
-            make.width.equalTo(pager).inset(20)
+            make.width.equalTo(pager).inset(10)
         }
         infoStackView.snp.makeConstraints { make in
             make.top.equalTo(backDropView.snp.bottom).offset(8)
@@ -160,8 +160,7 @@ class MovieDetailView: BaseView {
         synopsisShort.labelDesign(inputText: "", size: 12, color: .white, lines: 3)
         synopsisLong.labelDesign(inputText: "", size: 12, color: .white)
         
-        moreButton.setTitle("More", for: .normal)
-        moreButton.setTitleColor(.MyBlue, for: .normal)
+        moreButton.setButtonTitle(title: "More", color: .MyBlue, size: 14, weight: .bold)
         
         backDropView.register(BackDropCollectionViewCell.self, forCellWithReuseIdentifier: BackDropCollectionViewCell.id)
         backDropView.tag = 0
@@ -174,7 +173,7 @@ class MovieDetailView: BaseView {
         posterView.backgroundColor = .black
         
         infoStackView.axis = .horizontal
-        infoStackView.spacing = 2
+        infoStackView.spacing = 4
         
         pagerBackView.backgroundColor = .darkGray
 

@@ -8,29 +8,28 @@
 import UIKit
 import SnapKit
 
-class CinemaView: BaseView {
+final class CinemaView: BaseView {
+    
     let profileView = ProfileBaseView()
-    let searchLabel = UILabel()
+    private let searchLabel = UILabel()
     let noSearchedWord = UILabel()
     let deleteButton = UIButton()
     lazy var searchedWords = UICollectionView(frame: .zero, collectionViewLayout: searchedWordsLayout())
-    let movieLabel = UILabel()
+    private let movieLabel = UILabel()
     lazy var movieCollection = UICollectionView(frame: .zero, collectionViewLayout: movieLayout())
     
-    func searchedWordsLayout() -> UICollectionViewLayout{
+    private func searchedWordsLayout() -> UICollectionViewLayout{
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 10
-        layout.minimumLineSpacing = 10
         layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         return layout
     }
-    func movieLayout() -> UICollectionViewLayout {
+    private func movieLayout() -> UICollectionViewLayout {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 10
-        layout.minimumLineSpacing = 10
         layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         return layout
     }
@@ -47,10 +46,10 @@ class CinemaView: BaseView {
     override func configureLayout() {
         profileView.snp.makeConstraints { make in
             make.top.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(8)
-            make.height.equalTo(140)
+            make.height.equalTo(136)
         }
         searchLabel.snp.makeConstraints { make in
-            make.top.equalTo(profileView.snp.bottom).offset(12)
+            make.top.equalTo(profileView.snp.bottom).offset(18)
             make.leading.equalTo(safeAreaLayoutGuide).offset(8)
         }
         deleteButton.snp.makeConstraints { make in

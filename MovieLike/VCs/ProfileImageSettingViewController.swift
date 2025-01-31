@@ -7,21 +7,23 @@
 
 import UIKit
 
-class ProfileImageSettingViewController: BaseViewController {
+final class ProfileImageSettingViewController: BaseViewController {
 
-    let mainView = ProfileImageSettingView()
+    private let mainView = ProfileImageSettingView()
     var selectedItem : Int?
     var passData : ((Int?) -> (Int?))?
+    var editProfile = false
     override func loadView() {
         view = mainView
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        let titleLabel = UILabel()
-        titleLabel.text = "프로필 이미지 설정"
-        titleLabel.textColor = .white
-        navigationItem.titleView = titleLabel
-        
+        if editProfile {
+            navigationItem.setBarTitleView(title: "프로필 이미지 편집")
+        } else {
+            navigationItem.setBarTitleView(title: "프로필 이미지 설정")
+        }
+
         selectedItem = passData?(nil)
         setDelegate()
         mainView.selectedImage.image = UIImage(named: "profile_\(selectedItem!)")
@@ -29,12 +31,11 @@ class ProfileImageSettingViewController: BaseViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(backToProfileSetting))
         navigationItem.leftBarButtonItem?.tintColor = .MyBlue
     }
-    func setDelegate() {
+    private func setDelegate() {
         mainView.profileImages.delegate = self
         mainView.profileImages.dataSource = self
     }
     @objc func backToProfileSetting() {
-        UserDefaultsManager.shared.profileImage = selectedItem ?? 0
         passData?(selectedItem)
         navigationController?.popViewController(animated: true)
     }

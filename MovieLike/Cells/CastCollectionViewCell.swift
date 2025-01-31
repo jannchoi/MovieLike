@@ -7,14 +7,15 @@
 
 import UIKit
 import SnapKit
-import Kingfisher
 
-class CastCollectionViewCell: BaseCollectionViewCell {
+
+final class CastCollectionViewCell: BaseCollectionViewCell {
     
     static let id = "CastCollectionViewCell"
-    let profileImage = UIImageView()
-    let name = UILabel()
-    let character = UILabel()
+    private let profileImage = UIImageView()
+    private let name = UILabel()
+    private let character = UILabel()
+    
     func configureData(item: CastDetail) {
         
         profileImage.setOptionalImage(imgPath: item.profile_path)

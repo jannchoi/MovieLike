@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class SearchView: BaseView {
+final class SearchView: BaseView {
     
     let searchBar = UISearchBar()
     let tableView = UITableView()
@@ -44,7 +44,7 @@ class SearchView: BaseView {
         searchBar.backgroundColor = .black
         noSearchLabel.labelDesign(inputText: "원하는 검색 결과를 찾지 못했습니다.", size: 12, color: .MyGray)
         tableView.register(SearchTableViewCell.self, forCellReuseIdentifier: SearchTableViewCell.id)
-        tableView.backgroundColor = .black
+        tableView.backgroundColor = .clear
         
     }
     func updateViewLayout() {

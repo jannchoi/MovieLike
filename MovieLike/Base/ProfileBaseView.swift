@@ -28,7 +28,7 @@ class ProfileBaseView: BaseView {
     override func configureLayout() {
         grayBackView.snp.makeConstraints { make in
             make.top.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(8)
-            make.height.equalTo(140)
+            make.height.equalTo(136)
         }
         profileImage.snp.makeConstraints { make in
             make.top.leading.equalToSuperview().inset(16)
@@ -73,7 +73,7 @@ class ProfileBaseView: BaseView {
         grayBackView.layer.cornerRadius = 8
         profileImage.layer.cornerRadius = profileImage.frame.height / 2
         profileImage.clipsToBounds = true
-        profileImage.layer.borderWidth = 1
+        profileImage.layer.borderWidth = 3
         profileImage.layer.borderColor = UIColor.MyBlue.cgColor
     }
     

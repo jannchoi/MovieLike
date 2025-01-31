@@ -8,15 +8,15 @@
 import UIKit
 import SnapKit
 
-class ProfileImageSettingView: BaseView {
+final class ProfileImageSettingView: BaseView {
     
     let selectedImage = UIImageView()
     let cameraSymbol = UIImageView()
-    let cameraBack = UIView()
+    private let cameraBack = UIView()
     lazy var profileImages = UICollectionView(frame: .zero, collectionViewLayout: createCollectionViewLayout())
     
     
-    func createCollectionViewLayout() -> UICollectionViewLayout {
+    private func createCollectionViewLayout() -> UICollectionViewLayout {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         let sectionInset: CGFloat = 1
@@ -67,7 +67,7 @@ class ProfileImageSettingView: BaseView {
     func updateViewLayout() {
         selectedImage.layer.cornerRadius = selectedImage.frame.height / 2
         selectedImage.clipsToBounds = true
-        selectedImage.layer.borderWidth = 2
+        selectedImage.layer.borderWidth = 3
         selectedImage.layer.borderColor = UIColor.MyBlue.cgColor
         
         cameraSymbol.layer.cornerRadius = cameraSymbol.frame.height / 2

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class TabBarController: UITabBarController {
+final class TabBarController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -15,7 +15,7 @@ class TabBarController: UITabBarController {
         setupTabBarAppearence()
         
     }
-    func configureTabBarController() {
+    private func configureTabBarController() {
         let firstVC = CinemaViewController()
         firstVC.tabBarItem.title = "CINEMA"
         firstVC.tabBarItem.image = UIImage(systemName: "popcorn")
