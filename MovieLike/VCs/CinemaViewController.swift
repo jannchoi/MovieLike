@@ -81,8 +81,6 @@ final class CinemaViewController: UIViewController {
         NetworkManager.shared.callRequst(api: .todayMovie, model: TrendMovie.self, vc: self) { value in
             self.trendMovieList = value.results
             group.leave()
-        } failHandler: {
-            group.leave()
         }
         group.notify(queue: .main) {
             self.mainView.movieCollection.reloadData()
@@ -117,7 +115,7 @@ final class CinemaViewController: UIViewController {
     }
     @objc func updateMoviebox() {
 
-        mainView.profileView.movieboxButton.setButtonTitle(title: "\(UserDefaultsManager.shared.like.count) 개의 무비박스 보관중", color: UIColor.white, size: 17, weight: .bold)
+        mainView.profileView.movieboxButton.setButtonTitle(title: "\(UserDefaultsManager.shared.like.count) 개의 무비박스 보관중", color: UIColor.white, size: 16, weight: .bold)
     }
 }
 
@@ -132,12 +130,13 @@ extension CinemaViewController: UICollectionViewDelegate, UICollectionViewDataSo
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         switch collectionView.tag {
-        case 0 : let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchWordsCollectionViewCell.id, for: indexPath) as! SearchWordsCollectionViewCell
+        case 0 :
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchWordsCollectionViewCell.id, for: indexPath) as? SearchWordsCollectionViewCell else {return UICollectionViewCell()}
             cell.configureData(item: indexPath.item)
             cell.xButton.addTarget(self, action: #selector(xButtonTapped), for: .touchUpInside)
             return cell
         default :
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayMoviesCollectionViewCell.id, for: indexPath) as! TodayMoviesCollectionViewCell
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayMoviesCollectionViewCell.id, for: indexPath) as? TodayMoviesCollectionViewCell else {return UICollectionViewCell()}
             cell.configureData(item: trendMovieList[indexPath.item])
             cell.heartButton.addTarget(self, action: #selector(updateMoviebox), for: .touchUpInside)
             return cell

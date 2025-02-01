@@ -62,7 +62,7 @@ class ProfileBaseView: BaseView {
         angleBracket.tintColor = .MyGray
         
         movieboxButton.backgroundColor = .MyBlue.withAlphaComponent(0.5)
-        movieboxButton.setButtonTitle(title: "0 개의 무비박스 보관중", color: UIColor.white, size: 17, weight: .bold)
+        movieboxButton.setButtonTitle(title: "0 개의 무비박스 보관중", color: UIColor.white, size: 16, weight: .bold)
     }
     
     func updateViewLayout()
@@ -82,6 +82,6 @@ class ProfileBaseView: BaseView {
         profileImage.image = UIImage(named: "profile_\(data.profileImage)")
         nickname.text = data.nickname
         dateLabel.text = data.signDate + " 가입"
-        movieboxButton.setButtonTitle(title: "\(data.like.count) 개의 무비박스 보관중", color: UIColor.white, size: 17, weight: .bold)
+        movieboxButton.setButtonTitle(title: "\(data.like.count) 개의 무비박스 보관중", color: UIColor.white, size: 16, weight: .bold)
     }
 }

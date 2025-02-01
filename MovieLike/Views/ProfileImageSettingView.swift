@@ -51,7 +51,7 @@ final class ProfileImageSettingView: BaseView {
         profileImages.snp.makeConstraints { make in
             make.top.equalTo(selectedImage.snp.bottom).offset(40)
             make.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(20)
-            make.height.equalTo(230)
+            make.bottom.greaterThanOrEqualTo(safeAreaLayoutGuide).inset(10)
         }
     }
     override func configureView() {

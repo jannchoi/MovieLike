@@ -31,7 +31,7 @@ final class ProfileSettingViewController: UIViewController {
             mainView.finishButton.isHidden = true
         }
         else {
-            navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(backButtonTapped))
+            navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(backToOnboardingView))
             navigationItem.leftBarButtonItem?.tintColor = .MyBlue
         }
         
@@ -51,6 +51,9 @@ final class ProfileSettingViewController: UIViewController {
     @objc func backButtonTapped() {
         dismiss(animated: true)
 
+    }
+    @objc func backToOnboardingView() {
+        navigationController?.popViewController(animated: true)
     }
     private func setNavigationBar() {
         navigationItem.setBarTitleView(title: "프로필 편집")
@@ -128,7 +131,7 @@ final class ProfileSettingViewController: UIViewController {
         } else if trimmedInput.contains(where: {"@#$%".contains($0)}) {
             description = "닉네임에 @,#,$,%는 포함할 수 없어요."
             mainView.finishButton.isEnabled = false
-        } else if trimmedInput.contains(where: {"123456789".contains($0)}) {
+        } else if trimmedInput.contains(where: {"1234567890".contains($0)}) {
             description = "닉네임에 숫자는 포함할 수 없어요."
             mainView.finishButton.isEnabled = false
         } else {

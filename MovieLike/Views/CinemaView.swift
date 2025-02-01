@@ -66,7 +66,6 @@ final class CinemaView: BaseView {
             make.top.equalTo(searchLabel.snp.bottom).offset(20)
             make.centerX.equalTo(safeAreaLayoutGuide)
         }
-        
         movieLabel.snp.makeConstraints { make in
             make.top.equalTo(searchedWords.snp.bottom).offset(4)
             make.leading.equalTo(8)

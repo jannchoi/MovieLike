@@ -73,6 +73,7 @@ final class SearchViewController: UIViewController {
             
             if self.page > value.total_pages {
                 self.isEnd = true
+                group.leave()
                 return
             }
             if value.results.isEmpty {
@@ -90,8 +91,6 @@ final class SearchViewController: UIViewController {
             }
             group.leave()
             
-        } failHandler: {
-            group.leave()
         }
         group.notify(queue: .main) {
             self.mainView.tableView.reloadData()
@@ -130,7 +129,7 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: SearchTableViewCell.id) as! SearchTableViewCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchTableViewCell.id) as? SearchTableViewCell else {return UITableViewCell()}
         if let inputTxt = mainView.searchBar.text {
             cell.configureData(item: movieList[indexPath.row], txt: inputTxt)
         }

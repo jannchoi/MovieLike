@@ -112,14 +112,10 @@ final class MovieDetailViewController: UIViewController {
             self.backdropImg = value.backdrops
             self.posterImage = value.posters
             group.leave()
-        } failHandler: {
-            group.leave()
         }
         group.enter()
         NetworkManager.shared.callRequst(api: .cast(id: movieId), model: MovieCredit.self, vc: self) { value in
             self.castList = value.cast
-            group.leave()
-        } failHandler: {
             group.leave()
         }
         group.notify(queue: .main) {
@@ -132,19 +128,19 @@ final class MovieDetailViewController: UIViewController {
     
     private func setInfoLabel() {
 
-        let date = mainView.infoStackView.arrangedSubviews[0] as! UIButton
+        guard let date = mainView.infoStackView.arrangedSubviews[0] as? UIButton else {return}
         date.setButtonTitle(title: (releaseDate ?? "None") + "   | ", color: UIColor.MyGray, size: 12)
         date.setImage(UIImage(systemName: "calendar"), for: .normal)
         date.tintColor = .MyGray
         date.isUserInteractionEnabled = false
         
-        let tempRate = mainView.infoStackView.arrangedSubviews[1] as! UIButton
+        guard let tempRate = mainView.infoStackView.arrangedSubviews[1] as? UIButton else {return}
         tempRate.setButtonTitle(title: (rate ?? "None") + "   | ", color: UIColor.MyGray, size: 12)
         tempRate.setImage(UIImage(systemName: "star.fill"), for: .normal)
         tempRate.tintColor = .MyGray
         tempRate.isUserInteractionEnabled = false
         
-        let tempGenre = mainView.infoStackView.arrangedSubviews[2] as! UIButton
+        guard let tempGenre = mainView.infoStackView.arrangedSubviews[2] as? UIButton else {return}
         var genretotal = [String]()
 
         if let genre, genre.count > 0 {
@@ -182,16 +178,17 @@ extension MovieDetailViewController: UICollectionViewDelegate, UICollectionViewD
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         switch collectionView.tag {
         case 0:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: BackDropCollectionViewCell.id, for: indexPath) as! BackDropCollectionViewCell
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: BackDropCollectionViewCell.id, for: indexPath) as? BackDropCollectionViewCell else {return UICollectionViewCell()}
             cell.configureData(item: backdropImg[indexPath.row])
             return cell
         case 1:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CastCollectionViewCell.id, for: indexPath) as! CastCollectionViewCell
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CastCollectionViewCell.id, for: indexPath) as? CastCollectionViewCell else {return UICollectionViewCell()}
             cell.configureData(item: castList[indexPath.row])
 
             return cell
         default :
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PosterCollectionViewCell.id, for: indexPath) as! PosterCollectionViewCell
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PosterCollectionViewCell.id, for: indexPath) as? PosterCollectionViewCell else {return UICollectionViewCell()}
+            
             cell.configureData(item: posterImage[indexPath.row])
             
             return cell

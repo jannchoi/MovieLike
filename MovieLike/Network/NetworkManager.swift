@@ -41,7 +41,7 @@ class NetworkManager {
     static let shared = NetworkManager()
     private init() { }
     
-    func callRequst<T: Decodable>(api: TMDBRequest, model: T.Type,vc: UIViewController, completionHandler: @escaping(T) -> Void, failHandler: @escaping () -> Void) {
+    func callRequst<T: Decodable>(api: TMDBRequest, model: T.Type,vc: UIViewController, completionHandler: @escaping(T) -> Void) {
         
         AF.request(api.endpoint, method: api.method, headers: api.header)
             .validate(statusCode: 200...200)

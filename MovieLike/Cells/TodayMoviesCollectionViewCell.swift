@@ -35,7 +35,7 @@ class TodayMoviesCollectionViewCell: BaseCollectionViewCell {
     override func configureLayout() {
         posterImage.snp.makeConstraints { make in
             make.horizontalEdges.top.equalToSuperview().inset(2)
-            make.height.equalTo(330)
+            make.height.equalToSuperview().inset(50)
         }
         title.snp.makeConstraints { make in
             make.top.equalTo(posterImage.snp.bottom).offset(4)

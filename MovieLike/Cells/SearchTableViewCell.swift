@@ -30,7 +30,7 @@ final class SearchTableViewCell: BaseTableViewCell {
         heartButton.setHeartButton()
         
         heartButton.tintColor = .MyBlue
-        configGenre(ids: item.genre_ids)
+        configGenre(ids: item.genre_ids ?? [])
         
     }
     private func configGenre(ids: [Int]) {

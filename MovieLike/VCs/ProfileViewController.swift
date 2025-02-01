@@ -50,7 +50,7 @@ final class ProfileViewController: UIViewController {
         mainView.profileView.updateViewLayout()
         
     }
-    func resetUserdefaults() {
+    private func resetUserdefaults() {
         for key in UserDefaults.standard.dictionaryRepresentation().keys {
             UserDefaults.standard.removeObject(forKey: key.description)
         }
@@ -63,7 +63,7 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewCell.id) as! ProfileTableViewCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewCell.id) as? ProfileTableViewCell else {return UITableViewCell()}
         cell.configureData(inputText: category[indexPath.row])
         return cell
     }

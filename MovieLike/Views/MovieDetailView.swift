@@ -28,7 +28,7 @@ final class MovieDetailView: BaseView {
     
     func backDropLayout() -> UICollectionViewLayout{
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: UIScreen.main.bounds.width, height: 300)
+        layout.itemSize = CGSize(width: UIScreen.main.bounds.width, height: 310)
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         layout.scrollDirection = .horizontal
         layout.minimumLineSpacing = 0
@@ -41,9 +41,9 @@ final class MovieDetailView: BaseView {
         layout.scrollDirection = .horizontal
         let sectionInset: CGFloat = 4
         let cellSpacing: CGFloat = 4
-        let ColViewHeight:CGFloat = 120
-        let cellWidth = ColViewHeight - (sectionInset * 2) - (cellSpacing *  1)
-        layout.itemSize = CGSize(width: cellWidth * 2, height: cellWidth / 2)
+        let ColViewHeight:CGFloat = 130
+        let cellHeight = ColViewHeight - (sectionInset * 2) - (cellSpacing *  1)
+        layout.itemSize = CGSize(width: cellHeight * 2, height: cellHeight / 2)
         layout.sectionInset = UIEdgeInsets(top: 1, left: sectionInset, bottom: 1, right: sectionInset)
         return layout
     }
@@ -52,9 +52,9 @@ final class MovieDetailView: BaseView {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         let sectionInset: CGFloat = 4
-        let ColViewHeight:CGFloat = 150
-        let cellWidth = ColViewHeight - (sectionInset * 2)
-        layout.itemSize = CGSize(width: cellWidth / 4 * 3, height: cellWidth)
+        let ColViewHeight:CGFloat = 160
+        let cellHeight = ColViewHeight - (sectionInset * 2)
+        layout.itemSize = CGSize(width: cellHeight / 4 * 3, height: cellHeight)
         layout.sectionInset = UIEdgeInsets(top: 0, left: sectionInset, bottom: 0, right: sectionInset)
         return layout
     }
@@ -84,7 +84,7 @@ final class MovieDetailView: BaseView {
         backDropView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.width.equalTo(scrollView.snp.width)
-            make.height.equalTo(300)
+            make.height.equalTo(310)
         }
         pager.snp.makeConstraints { make in
             make.centerX.equalTo(safeAreaLayoutGuide)
@@ -102,13 +102,13 @@ final class MovieDetailView: BaseView {
             make.centerX.equalTo(safeAreaLayoutGuide)
         }
         dateLabel.snp.makeConstraints { make in
-            make.height.equalTo(17)
+            make.height.equalTo(20)
         }
         rateLabel.snp.makeConstraints { make in
-            make.height.equalTo(17)
+            make.height.equalTo(20)
         }
         genreLabel.snp.makeConstraints { make in
-            make.height.equalTo(17)
+            make.height.equalTo(20)
         }
         synopsisLabel.snp.makeConstraints { make in
             make.leading.equalTo(safeAreaLayoutGuide).offset(8)
@@ -137,7 +137,7 @@ final class MovieDetailView: BaseView {
         castView.snp.makeConstraints { make in
             make.top.equalTo(castLabel.snp.bottom).offset(8)
             make.width.equalTo(scrollView.snp.width)
-            make.height.equalTo(120)
+            make.height.equalTo(130)
         }
         posterLabel.snp.makeConstraints { make in
             make.top.equalTo(castView.snp.bottom).offset(16)
@@ -147,7 +147,7 @@ final class MovieDetailView: BaseView {
         posterView.snp.makeConstraints { make in
             make.top.equalTo(posterLabel.snp.bottom).offset(8)
             make.width.equalTo(scrollView.snp.width)
-            make.height.equalTo(150)
+            make.height.equalTo(160)
             make.bottom.equalToSuperview()
         }
     }

@@ -26,7 +26,7 @@ final class ProfileImageSettingViewController: BaseViewController {
 
         selectedItem = passData?(nil)
         setDelegate()
-        mainView.selectedImage.image = UIImage(named: "profile_\(selectedItem!)")
+        mainView.selectedImage.image = UIImage(named: "profile_\(selectedItem ?? 0)")
     
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(backToProfileSetting))
         navigationItem.leftBarButtonItem?.tintColor = .MyBlue
@@ -53,13 +53,14 @@ extension ProfileImageSettingViewController: UICollectionViewDelegate, UICollect
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfileImageCollectionViewCell.id, for: indexPath) as! ProfileImageCollectionViewCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfileImageCollectionViewCell.id, for: indexPath) as? ProfileImageCollectionViewCell else {return UICollectionViewCell()}
+        
         cell.configImage(itemidx: indexPath.item, selected: selectedItem!)
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         selectedItem = indexPath.item
-        mainView.selectedImage.image = UIImage(named: "profile_\(selectedItem!)")
+        mainView.selectedImage.image = UIImage(named: "profile_\(selectedItem ?? 0)")
         collectionView.reloadData()
     }
     
