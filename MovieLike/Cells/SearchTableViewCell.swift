@@ -19,6 +19,19 @@ final class SearchTableViewCell: BaseTableViewCell {
     private let genreStack = UIStackView()
     let heartButton = UIButton()
     
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: .default, reuseIdentifier: "SearchTableViewCell")
+        self.isSkeletonable = true
+        posterImage.isSkeletonable = true
+        titleLable.isSkeletonable = true
+        dateLabel.isSkeletonable = true
+        genreStack.isSkeletonable = true
+        heartButton.isSkeletonable = true
+    }
+    @MainActor required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     func configureData(item: MovieDetail, txt: String) {
 
         posterImage.setOptionalImage(imgPath: item.poster_path)

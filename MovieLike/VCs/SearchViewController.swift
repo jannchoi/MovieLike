@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SkeletonView
 
 final class SearchViewController: UIViewController {
 
@@ -24,6 +25,7 @@ final class SearchViewController: UIViewController {
         super.viewDidLoad()
         setDelegate()
         navigationBarDesign()
+        mainView.tableView.isSkeletonable = true
 
     }
     override func viewWillAppear(_ animated: Bool) {
@@ -93,8 +95,23 @@ final class SearchViewController: UIViewController {
             
         }
         group.notify(queue: .main) {
-            self.mainView.tableView.reloadData()
+            self.mainView.tableView.showSkeleton()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.mainView.tableView.reloadData()
+                self.mainView.tableView.hideSkeleton()
+            }
         }
+    }
+}
+extension SearchViewController: SkeletonTableViewDataSource{
+    func numSections(in collectionSkeletonView: UITableView) -> Int  {
+        return 1
+    }
+    func collectionSkeletonView(_ skeletonView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return movieList.count
+    }
+    func collectionSkeletonView(_ skeletonView: UITableView, cellIdentifierForRowAt indexPath: IndexPath) -> ReusableCellIdentifier {
+        return SearchTableViewCell.id
     }
 }
 extension SearchViewController: UITableViewDataSourcePrefetching {

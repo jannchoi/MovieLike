@@ -68,8 +68,10 @@ final class ProfileSettingViewController: UIViewController {
         if mainView.finishButton.isEnabled {
             UserDefaultsManager.shared.nickname = mainView.nicknameTextField.text!
             UserDefaultsManager.shared.profileImage = initialImage
-            presentingViewController?.viewWillAppear(true)
-            dismiss(animated: true)
+            NotificationCenter.default.post(name: NSNotification.Name("UserDefaultsChanged"), object: nil)
+            dismiss(animated: true) {
+                
+            }
         }
 
     }

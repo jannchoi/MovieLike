@@ -21,6 +21,14 @@ final class ProfileViewController: UIViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(profileViewTapped))
         mainView.profileView.grayBackView.addGestureRecognizer(tapGesture)
         
+        NotificationCenter.default.addObserver(self, selector: #selector(userDefaultsChanged), name: NSNotification.Name("UserDefaultsChanged"), object: nil)
+        
+        self.tabBarController?.navigationItem.title = "설정"
+        self.tabBarController?.navigationItem.rightBarButtonItem = nil
+
+    }
+    @objc func userDefaultsChanged() {
+        mainView.profileView.updateProfile()
     }
     private func setDelegate() {
         mainView.tableView.delegate = self
@@ -28,9 +36,6 @@ final class ProfileViewController: UIViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        self.tabBarController?.navigationItem.title = "설정"
-        self.tabBarController?.navigationItem.rightBarButtonItem = nil
         mainView.profileView.updateProfile()
         mainView.tableView.reloadData()
         
@@ -41,10 +46,7 @@ final class ProfileViewController: UIViewController {
         let nav = UINavigationController(rootViewController: vc)
         nav.sheetPresentationController?.prefersGrabberVisible = true
         present(nav, animated: true)
-        
-        
     }
-    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         mainView.profileView.updateViewLayout()
