@@ -9,7 +9,8 @@ import UIKit
 
 final class CinemaViewController: UIViewController {
     private let mainView = CinemaView()
-    private var trendMovieList = [MovieDetail]()
+    
+    let viewModel = CinemaViewModel()
     
     override func loadView() {
         view = mainView
@@ -17,10 +18,28 @@ final class CinemaViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        print(self.navigationController)
         setDelegate()
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(profileViewTapped))
         mainView.profileView.grayBackView.addGestureRecognizer(tapGesture)
         mainView.deleteButton.addTarget(self, action: #selector(resetSearchedTerm), for: .touchUpInside)
+        
+        viewModel.movieList.bind { _ in
+            self.mainView.movieCollection.reloadData()
+        }
+        viewModel.errorMessage.bind { message in
+            if let message {
+                self.showAlert(title: "Error", text: message, button: nil)
+            }
+        }
+        
+        viewModel.userdefaultsSearchedTerm.bind { _ in
+            self.mainView.searchedWords.reloadData()
+        }
+        
+        viewModel.isShowSearchedWords.bind { bool in
+            self.switchSearchedTermView(isShowTable: bool)
+        }
 
     }
     private func setDelegate() {
@@ -32,10 +51,12 @@ final class CinemaViewController: UIViewController {
     }
     
     @objc func resetSearchedTerm() {
-        UserDefaultsManager.shared.searchedTerm.removeAll()
-        mainView.searchedWords.reloadData()
-        switchSearchedTermView()
-        loadData()
+        viewModel.inputResetSearchedTermTapped.value = ()
+        viewModel.inputUpdateSearchedTerm.value = ()
+        //UserDefaultsManager.shared.searchedTerm.removeAll()
+        //mainView.searchedWords.reloadData()
+        //switchSearchedTermView()
+
     }
 
     @objc func profileViewTapped() {
@@ -54,14 +75,15 @@ final class CinemaViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationBarDesign()
         mainView.profileView.updateProfile()
-        mainView.searchedWords.reloadData()
-        switchSearchedTermView()
-        loadData()
+        
+ 
+        //mainView.searchedWords.reloadData()
+        //switchSearchedTermView()
         
     }
     
-    private func switchSearchedTermView() {
-        if UserDefaultsManager.shared.searchedTerm.isEmpty {
+    private func switchSearchedTermView(isShowTable: Bool) {
+        if !isShowTable {
             mainView.noSearchedWord.isHidden = false
             mainView.searchedWords.isHidden = true
         } else {
@@ -74,18 +96,6 @@ final class CinemaViewController: UIViewController {
         let vc = SearchViewController()
         vc.searchButtonClicked = true
         navigationController?.pushViewController(vc, animated: true)
-    }
-    private func loadData() {
-        let group = DispatchGroup()
-        group.enter()
-        NetworkManager.shared.callRequst(api: .todayMovie, model: TrendMovie.self, vc: self) { value in
-            self.trendMovieList = value.results
-            group.leave()
-        }
-        group.notify(queue: .main) {
-            self.mainView.movieCollection.reloadData()
-        }
-
     }
 
     
@@ -109,8 +119,8 @@ final class CinemaViewController: UIViewController {
 
     @objc func xButtonTapped(_ sender: UIButton) {
         UserDefaultsManager.shared.searchedTerm.remove(at: sender.tag)
-        mainView.searchedWords.reloadData()
-        switchSearchedTermView()
+        //mainView.searchedWords.reloadData()
+        //switchSearchedTermView()
 
     }
     @objc func updateMoviebox() {
@@ -124,7 +134,7 @@ extension CinemaViewController: UICollectionViewDelegate, UICollectionViewDataSo
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch collectionView.tag {
         case 0 : return UserDefaultsManager.shared.searchedTerm.count
-        default: return trendMovieList.count
+        default: return viewModel.movieList.value.count
         }
     }
     
@@ -137,7 +147,7 @@ extension CinemaViewController: UICollectionViewDelegate, UICollectionViewDataSo
             return cell
         default :
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayMoviesCollectionViewCell.id, for: indexPath) as? TodayMoviesCollectionViewCell else {return UICollectionViewCell()}
-            cell.configureData(item: trendMovieList[indexPath.item])
+            cell.configureData(item: viewModel.movieList.value[indexPath.item])
             cell.heartButton.addTarget(self, action: #selector(updateMoviebox), for: .touchUpInside)
             return cell
             
@@ -154,14 +164,16 @@ extension CinemaViewController: UICollectionViewDelegate, UICollectionViewDataSo
             navigationController?.pushViewController(vc, animated: true)
         default :
             let vc = MovieDetailViewController()
-            let item = trendMovieList[indexPath.item]
+            let item = viewModel.movieList.value[indexPath.item]
             vc.movieId = item.id
             vc.releaseDate = item.release_date
             vc.rate = String(item.vote_average ?? 0.0)
             vc.movieTitle = item.title
             vc.synopsis = item.overview
             vc.genre = item.genre_ids
+
             navigationController?.pushViewController(vc, animated: true)
+
         }
     }
 

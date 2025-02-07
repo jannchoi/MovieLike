@@ -71,28 +71,38 @@ final class SearchViewController: UIViewController {
     private func loadData() {
         let group = DispatchGroup()
         group.enter()
-        NetworkManager.shared.callRequst(api: .searchMovie(query: inputText ?? "", page: page), model: SearchMovie.self, vc: self) { value in
-            
-            if self.page > value.total_pages {
-                self.isEnd = true
+        NetworkManager.shared.callRequst(api: .searchMovie(query: inputText ?? "", page: page), model: SearchMovie.self) {
+            response in
+            switch response {
+            case .success(let value) :
+                if self.page > value.total_pages {
+                    self.isEnd = true
+                    group.leave()
+                    return
+                }
+                if value.results.isEmpty {
+                    self.mainView.noSearchLabel.isHidden = false
+                    self.mainView.tableView.isHidden = true
+                }
+                else {
+                    self.mainView.noSearchLabel.isHidden = true
+                }
+                
+                if self.page == 1{
+                    self.movieList = value.results
+                } else {
+                    self.movieList.append(contentsOf: value.results)
+                }
                 group.leave()
-                return
+            case .failure(let failure) :
+                if let errorType = failure as? NetworkError {
+                    self.showAlert(title: "Error", text: errorType.errorMessage, button: nil)
+                }else {
+                    print(failure.localizedDescription)
+                }
+                group.leave()
+                
             }
-            if value.results.isEmpty {
-                self.mainView.noSearchLabel.isHidden = false
-                self.mainView.tableView.isHidden = true
-            }
-            else {
-                self.mainView.noSearchLabel.isHidden = true
-            }
-            
-            if self.page == 1{
-                self.movieList = value.results
-            } else {
-                self.movieList.append(contentsOf: value.results)
-            }
-            group.leave()
-            
         }
         group.notify(queue: .main) {
             self.mainView.tableView.showSkeleton()

@@ -11,7 +11,7 @@ final class ProfileImageSettingViewController: BaseViewController {
 
     private let mainView = ProfileImageSettingView()
     var selectedItem : Int?
-    var passData : ((Int?) -> (Int?))?
+    var passData : ((Int?) -> (Int?))? 
     var editProfile = false
     override func loadView() {
         view = mainView

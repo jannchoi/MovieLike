@@ -41,32 +41,29 @@ class NetworkManager {
     static let shared = NetworkManager()
     private init() { }
     
-    func callRequst<T: Decodable>(api: TMDBRequest, model: T.Type,vc: UIViewController, completionHandler: @escaping(T) -> Void) {
+    func callRequst<T: Decodable>(api: TMDBRequest, model: T.Type, completionHandler: @escaping(Result<T,Error>) -> Void) {
         
         AF.request(api.endpoint, method: api.method, headers: api.header)
             .validate(statusCode: 200...200)
             .responseDecodable(of: T.self) { response in
                 switch response.result {
                 case .success(let value):
-                    completionHandler(value)
+                    completionHandler(.success(value))
                 case .failure(let error) :
-                    let alert = UIAlertController(title: "오류", message: self.getErrorMessage(code: response.response?.statusCode ?? 501), preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "확인", style: .cancel))
-                    vc.present(alert, animated: true)
+                    let code = response.response?.statusCode
+                    completionHandler(.failure(self.getErrorMessage(code: code ?? 500)))
                     print(error)
                 }
             }
     }
     
-    private func getErrorMessage(code: Int) -> String{
+    private func getErrorMessage(code: Int) -> NetworkError {
         switch code {
-        case 400 : return NetworkError.badRequest.errorMessage
-        case 401 : return NetworkError.unauthorized.errorMessage
-        case 403 : return NetworkError.forbidden.errorMessage
-        case 404 : return NetworkError.notFound.errorMessage
-        case 500 : return NetworkError.serverError.errorMessage
-        default :
-            return "Unknown error"
+        case 400 : return .badRequest
+        case 401 : return .unauthorized
+        case 403 : return .forbidden
+        case 404 : return .notFound
+        default : return .serverError
         }
     }
 }

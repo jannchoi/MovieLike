@@ -34,6 +34,7 @@ final class MovieDetailViewController: UIViewController {
         
         setDelegate()
         navigationBarDesign()
+        print(self.navigationController)
         loadData()
         setInfoLabel()
         
@@ -108,15 +109,37 @@ final class MovieDetailViewController: UIViewController {
         guard let movieId else {return}
         let group = DispatchGroup()
         group.enter()
-        NetworkManager.shared.callRequst(api: .movieImage(id: movieId), model: MovieImage.self, vc: self) { value in
-            self.backdropImg = value.backdrops
-            self.posterImage = value.posters
-            group.leave()
+        NetworkManager.shared.callRequst(api: .movieImage(id: movieId), model: MovieImage.self) { response in
+            switch response {
+            case .success(let value) :
+                self.backdropImg = value.backdrops
+                self.posterImage = value.posters
+                group.leave()
+            case .failure(let failure) :
+                if let errorType = failure as? NetworkError {
+                    self.showAlert(title: "Error", text: errorType.errorMessage, button: nil)
+                }else {
+                    print(failure.localizedDescription)
+                }
+                group.leave()
+            }
         }
         group.enter()
-        NetworkManager.shared.callRequst(api: .cast(id: movieId), model: MovieCredit.self, vc: self) { value in
-            self.castList = value.cast
-            group.leave()
+        NetworkManager.shared.callRequst(api: .cast(id: movieId), model: MovieCredit.self) {
+            response in
+            switch response {
+            case .success(let value) :
+                self.castList = value.cast
+                group.leave()
+                
+            case .failure(let failure) :
+                if let errorType = failure as? NetworkError {
+                    self.showAlert(title: "Error", text: errorType.errorMessage, button: nil)
+                }else {
+                    print(failure.localizedDescription)
+                }
+                group.leave()
+            }
         }
         group.notify(queue: .main) {
             self.mainView.backDropView.reloadData()
