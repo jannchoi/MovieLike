@@ -6,41 +6,58 @@
 //
 
 import Foundation
-class CinemaViewModel {
+class CinemaViewModel: BaseViewModel {
+    private(set) var input: Input
+    private(set) var output: Output
     
-    var movieList: Observable<[MovieDetail]> = Observable([])
-    var errorMessage: Observable<String?> = Observable(nil)
+    struct Input{
+        var resetSearchedTermTapped: Observable<Void> = Observable(())
+        var updateSearchedTerm: Observable<Void> = Observable(())
+        var deleteSearchedTerm: Observable<Int?> = Observable(nil)
+        
+    }
+    struct Output {
+        var movieList: Observable<[MovieDetail]> = Observable([])
+        var errorMessage: Observable<String?> = Observable(nil)
+        var isShowSearchedWords: Observable<Bool> = Observable(false)
+    }
     
     var userdefaultsSearchedTerm: Observable<[String]> =  Observable(UserDefaultsManager.shared.searchedTerm)
     
-    var inputResetSearchedTermTapped: Observable<Void> = Observable(())
-    var inputUpdateSearchedTerm: Observable<Void> = Observable(())
-    
-    var isShowSearchedWords: Observable<Bool> = Observable(false)
-    
     init() {
-        self.movieList.bind { _ in
+        input = Input()
+        output = Output()
+        transform()    }
+    func transform() {
+        self.output.movieList.bind { _ in
             self.loadData()
         }
-        self.inputResetSearchedTermTapped.bind { _ in
+        self.input.resetSearchedTermTapped.lazyBind { _ in
             self.resetSearchedTerm()
             self.switchSearchedTermView()
         }
-        self.inputUpdateSearchedTerm.bind { _ in
+        self.input.updateSearchedTerm.bind { _ in
+            self.userdefaultsSearchedTerm.value = UserDefaultsManager.shared.searchedTerm
+            self.switchSearchedTermView()
+        }
+        userdefaultsSearchedTerm.bind { _ in
+            self.switchSearchedTermView()
+        }
+        input.deleteSearchedTerm.lazyBind { target in
+            guard let target else {return}
+            UserDefaultsManager.shared.searchedTerm.remove(at: target)
             self.userdefaultsSearchedTerm.value = UserDefaultsManager.shared.searchedTerm
         }
-        
-        
     }
     private func resetSearchedTerm() {
         UserDefaultsManager.shared.searchedTerm.removeAll()
     }
     private func switchSearchedTermView() {
         if self.userdefaultsSearchedTerm.value.isEmpty {
-            self.isShowSearchedWords.value = false
+            self.output.isShowSearchedWords.value = false
         }
         else {
-            self.isShowSearchedWords.value = true
+            self.output.isShowSearchedWords.value = true
         }
     }
     
@@ -48,11 +65,11 @@ class CinemaViewModel {
         NetworkManager.shared.callRequst(api: .todayMovie, model: TrendMovie.self) { response in
             switch response {
             case .success(let value) :
-                self.movieList.value = value.results
-                self.errorMessage.value = nil
+                self.output.movieList.value = value.results
+                self.output.errorMessage.value = nil
             case .failure(let failure) :
                 if let errorType = failure as? NetworkError {
-                    self.errorMessage.value = errorType.errorMessage
+                    self.output.errorMessage.value = errorType.errorMessage
                 }
             }
         }

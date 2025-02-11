@@ -18,29 +18,29 @@ final class CinemaViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(self.navigationController)
         setDelegate()
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(profileViewTapped))
         mainView.profileView.grayBackView.addGestureRecognizer(tapGesture)
         mainView.deleteButton.addTarget(self, action: #selector(resetSearchedTerm), for: .touchUpInside)
         
-        viewModel.movieList.bind { _ in
+        bindData()
+    }
+    
+    private func bindData() {
+        viewModel.output.movieList.lazyBind { _ in
             self.mainView.movieCollection.reloadData()
         }
-        viewModel.errorMessage.bind { message in
+        viewModel.output.errorMessage.lazyBind { message in
             if let message {
                 self.showAlert(title: "Error", text: message, button: nil)
             }
         }
-        
-        viewModel.userdefaultsSearchedTerm.bind { _ in
-            self.mainView.searchedWords.reloadData()
-        }
-        
-        viewModel.isShowSearchedWords.bind { bool in
-            self.switchSearchedTermView(isShowTable: bool)
-        }
 
+        
+        viewModel.output.isShowSearchedWords.lazyBind { bool in
+            self.switchSearchedTermView(isShowTable: bool)
+            
+        }
     }
     private func setDelegate() {
         mainView.searchedWords.delegate = self
@@ -51,12 +51,8 @@ final class CinemaViewController: UIViewController {
     }
     
     @objc func resetSearchedTerm() {
-        viewModel.inputResetSearchedTermTapped.value = ()
-        viewModel.inputUpdateSearchedTerm.value = ()
-        //UserDefaultsManager.shared.searchedTerm.removeAll()
-        //mainView.searchedWords.reloadData()
-        //switchSearchedTermView()
-
+        viewModel.input.resetSearchedTermTapped.value = ()
+        viewModel.input.updateSearchedTerm.value = ()
     }
 
     @objc func profileViewTapped() {
@@ -75,11 +71,8 @@ final class CinemaViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationBarDesign()
         mainView.profileView.updateProfile()
-        
- 
-        //mainView.searchedWords.reloadData()
-        //switchSearchedTermView()
-        
+        viewModel.userdefaultsSearchedTerm.value = UserDefaultsManager.shared.searchedTerm
+
     }
     
     private func switchSearchedTermView(isShowTable: Bool) {
@@ -89,12 +82,13 @@ final class CinemaViewController: UIViewController {
         } else {
             mainView.noSearchedWord.isHidden = true
             mainView.searchedWords.isHidden = false
+            self.mainView.searchedWords.reloadData()
         }
     }
     
     @objc func searchButtonTapped() {
         let vc = SearchViewController()
-        vc.searchButtonClicked = true
+        vc.viewModel.input.fromSearchButton.value = true
         navigationController?.pushViewController(vc, animated: true)
     }
 
@@ -118,9 +112,7 @@ final class CinemaViewController: UIViewController {
     }
 
     @objc func xButtonTapped(_ sender: UIButton) {
-        UserDefaultsManager.shared.searchedTerm.remove(at: sender.tag)
-        //mainView.searchedWords.reloadData()
-        //switchSearchedTermView()
+        viewModel.input.deleteSearchedTerm.value = sender.tag
 
     }
     @objc func updateMoviebox() {
@@ -134,7 +126,7 @@ extension CinemaViewController: UICollectionViewDelegate, UICollectionViewDataSo
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch collectionView.tag {
         case 0 : return UserDefaultsManager.shared.searchedTerm.count
-        default: return viewModel.movieList.value.count
+        default: return viewModel.output.movieList.value.count
         }
     }
     
@@ -147,7 +139,7 @@ extension CinemaViewController: UICollectionViewDelegate, UICollectionViewDataSo
             return cell
         default :
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayMoviesCollectionViewCell.id, for: indexPath) as? TodayMoviesCollectionViewCell else {return UICollectionViewCell()}
-            cell.configureData(item: viewModel.movieList.value[indexPath.item])
+            cell.configureData(item: viewModel.output.movieList.value[indexPath.item])
             cell.heartButton.addTarget(self, action: #selector(updateMoviebox), for: .touchUpInside)
             return cell
             
@@ -159,12 +151,12 @@ extension CinemaViewController: UICollectionViewDelegate, UICollectionViewDataSo
         case 0 :
             let vc = SearchViewController()
             let word = UserDefaultsManager.shared.searchedTerm[indexPath.item]
-            vc.inputText = word
+            vc.viewModel.input.searchedTerm.value = word
             vc.mainView.searchBar.text = word
             navigationController?.pushViewController(vc, animated: true)
         default :
             let vc = MovieDetailViewController()
-            let item = viewModel.movieList.value[indexPath.item]
+            let item = viewModel.output.movieList.value[indexPath.item]
             vc.movieId = item.id
             vc.releaseDate = item.release_date
             vc.rate = String(item.vote_average ?? 0.0)

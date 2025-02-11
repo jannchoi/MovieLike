@@ -11,11 +11,7 @@ import SkeletonView
 final class SearchViewController: UIViewController {
 
     let mainView = SearchView()
-    var inputText : String?
-    var searchButtonClicked = false
-    private var page: Int = 1
-    private var movieList = [MovieDetail]()
-    private var isEnd = false
+    let viewModel = SearchViewModel()
     
     override func loadView() {
         view = mainView
@@ -26,16 +22,48 @@ final class SearchViewController: UIViewController {
         setDelegate()
         navigationBarDesign()
         mainView.tableView.isSkeletonable = true
+        
+        bindData()
 
+    }
+    
+    private func bindData() {
+
+        viewModel.output.movieList.lazyBind { _ in
+            if self.viewModel.isResultEmpty {
+                self.mainView.noSearchLabel.isHidden = false
+                self.mainView.tableView.isHidden = true
+                return
+            }
+            else {
+                self.mainView.noSearchLabel.isHidden = true
+                self.mainView.tableView.isHidden = false
+            }
+            self.mainView.tableView.showSkeleton()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.mainView.tableView.reloadData()
+                self.mainView.tableView.hideSkeleton()
+            }
+            
+        }
+        viewModel.output.errorMessage.lazyBind { message in
+            print("errorMessage")
+            guard let message else {return}
+            self.showAlert(title: "Error", text: message, button: nil)
+        }
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        setFirstUI()
+        viewModel.output.isFromSearchButton.bind { Bool in
+            print("isFromSearchButton")
+            self.setFirstUI(bool: Bool)
+        }
 
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        searchButtonClicked = false
+        viewModel.input.fromSearchButton.value = false
+        print(UserDefaultsManager.shared.searchedTerm)
     }
     private func navigationBarDesign() {
         navigationItem.setBarTitleView(title: "영화 검색")
@@ -57,68 +85,24 @@ final class SearchViewController: UIViewController {
         super.viewDidLayoutSubviews()
         mainView.updateViewLayout()
     }
-    private func setFirstUI() {
-        if searchButtonClicked{
+    private func setFirstUI(bool: Bool) {
+        if bool {
             mainView.searchBar.becomeFirstResponder()
             mainView.tableView.isHidden = true
             mainView.noSearchLabel.isHidden = true
         }
         else {
             mainView.tableView.isHidden = false
-            loadData()
         }
     }
-    private func loadData() {
-        let group = DispatchGroup()
-        group.enter()
-        NetworkManager.shared.callRequst(api: .searchMovie(query: inputText ?? "", page: page), model: SearchMovie.self) {
-            response in
-            switch response {
-            case .success(let value) :
-                if self.page > value.total_pages {
-                    self.isEnd = true
-                    group.leave()
-                    return
-                }
-                if value.results.isEmpty {
-                    self.mainView.noSearchLabel.isHidden = false
-                    self.mainView.tableView.isHidden = true
-                }
-                else {
-                    self.mainView.noSearchLabel.isHidden = true
-                }
-                
-                if self.page == 1{
-                    self.movieList = value.results
-                } else {
-                    self.movieList.append(contentsOf: value.results)
-                }
-                group.leave()
-            case .failure(let failure) :
-                if let errorType = failure as? NetworkError {
-                    self.showAlert(title: "Error", text: errorType.errorMessage, button: nil)
-                }else {
-                    print(failure.localizedDescription)
-                }
-                group.leave()
-                
-            }
-        }
-        group.notify(queue: .main) {
-            self.mainView.tableView.showSkeleton()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.mainView.tableView.reloadData()
-                self.mainView.tableView.hideSkeleton()
-            }
-        }
-    }
+    
 }
 extension SearchViewController: SkeletonTableViewDataSource{
     func numSections(in collectionSkeletonView: UITableView) -> Int  {
         return 1
     }
     func collectionSkeletonView(_ skeletonView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return movieList.count
+        return viewModel.output.movieList.value.count
     }
     func collectionSkeletonView(_ skeletonView: UITableView, cellIdentifierForRowAt indexPath: IndexPath) -> ReusableCellIdentifier {
         return SearchTableViewCell.id
@@ -126,41 +110,26 @@ extension SearchViewController: SkeletonTableViewDataSource{
 }
 extension SearchViewController: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-        
-        for item in indexPaths {
-            if movieList.count - 4 <= item.row && isEnd == false {
-                page += 1
-                loadData()
-            }
-        }
+        viewModel.input.prefetchTrigger.value = indexPaths
     }
 }
 extension SearchViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        
-        inputText = searchBar.text ?? ""
-        inputText = inputText?.trimmingCharacters(in: .whitespacesAndNewlines)
-        page = 1
-        movieList.removeAll()
-        mainView.tableView.isHidden = false
-        if !UserDefaultsManager.shared.searchedTerm.contains(inputText!) {
-            UserDefaultsManager.shared.searchedTerm.insert(inputText!, at: 0)
-        }
-        loadData()
+        viewModel.input.searchedTerm.value = searchBar.text
+
         view.endEditing(true)
     }
 }
 extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return movieList.count
+        return viewModel.output.movieList.value.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchTableViewCell.id) as? SearchTableViewCell else {return UITableViewCell()}
         if let inputTxt = mainView.searchBar.text {
-            cell.configureData(item: movieList[indexPath.row], txt: inputTxt)
+            cell.configureData(item: viewModel.output.movieList.value[indexPath.row], txt: inputTxt)
         }
-
         return cell
         
     }
@@ -169,7 +138,7 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc = MovieDetailViewController()
-        let item = movieList[indexPath.row]
+        let item = viewModel.output.movieList.value[indexPath.row]
         vc.movieId = item.id
         vc.releaseDate = item.release_date
         vc.rate = String(item.vote_average ?? 0.0)
