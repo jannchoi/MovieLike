@@ -84,11 +84,6 @@ final class MovieDetailViewController: UIViewController {
             tempGenre.tintColor = .MyGray
             tempGenre.isUserInteractionEnabled = false
         }
-
-        
-
-        
-
     }
     @objc func backButtonTapped() {
         navigationController?.popViewController(animated: true)
@@ -103,11 +98,12 @@ final class MovieDetailViewController: UIViewController {
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        
         DispatchQueue.main.async {
             self.mainView.updateViewLayout()
             self.setPager()
         }
-        
     }
     @objc func pageChanged(_ sender: UIPageControl) {
         let indexPath = IndexPath(item: sender.currentPage, section: 0)

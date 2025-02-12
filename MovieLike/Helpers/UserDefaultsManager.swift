@@ -39,6 +39,6 @@ enum UserDefaultsManager {
     static var like
     @MyDefaults(key: Key.searchedTerm.rawValue, empty: [String]())
     static var searchedTerm
-    @MyDefaults(key: Key.mbti.rawValue, empty: "None")
+    @MyDefaults(key: Key.mbti.rawValue, empty: [String : [Int]]())
     static var mbti
 }

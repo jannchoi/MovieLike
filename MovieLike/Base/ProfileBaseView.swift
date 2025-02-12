@@ -90,7 +90,8 @@ class ProfileBaseView: BaseView {
         profileImage.image = UIImage(named: "profile_\(UserDefaultsManager.profileImage)")
         nickname.text = UserDefaultsManager.nickname
         dateLabel.text = UserDefaultsManager.signDate + " 가입"
-        mbtiLabel.text = UserDefaultsManager.mbti
+        print(UserDefaultsManager.mbti)
+        mbtiLabel.text = UserDefaultsManager.mbti.first?.key ?? "None"
         movieboxButton.setButtonTitle(title: "\(UserDefaultsManager.like.count) 개의 무비박스 보관중", color: UIColor.white, size: 16, weight: .bold)
     }
 }

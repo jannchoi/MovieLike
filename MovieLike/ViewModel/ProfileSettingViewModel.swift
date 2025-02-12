@@ -14,7 +14,7 @@ final class ProfileSettingViewModel: BaseViewModel {
         
         var finishButtonTrigger: Observable<String?> = Observable(nil)
         var nickname: Observable<String?> = Observable(UserDefaultsManager.nickname)
-        var selectedButtons: Observable<[String?]> = Observable([nil,nil,nil,nil])
+        var selectedButtons: Observable<[(String?,Int?)]> = Observable([(nil, nil),(nil, nil),(nil, nil),(nil, nil)])
         
     }
     struct Output {
@@ -23,6 +23,7 @@ final class ProfileSettingViewModel: BaseViewModel {
         var descriptionLabel: Observable<String> = Observable("")
         var preparedNickname: Observable<String> = Observable("")
         var isButtonEnable: Observable<Bool> = Observable(false)
+        var preparedMBTI: Observable<[Int]> = Observable([])
     }
     
     var isEditMode: Observable<Bool> = Observable(false)
@@ -34,28 +35,36 @@ final class ProfileSettingViewModel: BaseViewModel {
         output = Output()
         
         transform()
+
     }
     func transform() {
-        setProfileImage()
-        prepareNickname()
+        setSavedProfile()
         
-        input.finishButtonTrigger.bind { _ in
+        input.finishButtonTrigger.lazyBind { _ in
             self.saveData()
         }
         input.nickname.lazyBind { _ in
             self.isValidNickname()
+            self.checkIsButtonEnable()
         }
-        input.selectedButtons.bind { _ in
+        input.selectedButtons.lazyBind { _ in
             self.checkMbtiIsValid()
             self.checkIsButtonEnable()
         }
+    }
+    private func setSavedProfile() {
+        setProfileImage()
+        prepareNickname()
+        setMBTI()
+        checkIsButtonEnable()
     }
     private func checkIsButtonEnable() {
         output.isButtonEnable.value = output.nicknameIsValid.value && mbtiIsValid
     }
     
     private func checkMbtiIsValid() {
-        if input.selectedButtons.value.contains(nil) {
+        let mbtilist = input.selectedButtons.value.map{$0.0}
+        if mbtilist.contains(nil) {
             mbtiIsValid = false
         } else {
             mbtiIsValid = true
@@ -63,6 +72,7 @@ final class ProfileSettingViewModel: BaseViewModel {
     }
     private func prepareNickname() {
         if UserDefaultsManager.nickname != "None" {
+            input.nickname.value = UserDefaultsManager.nickname
             output.preparedNickname.value = UserDefaultsManager.nickname
         } else {
             output.preparedNickname.value = ""
@@ -77,18 +87,35 @@ final class ProfileSettingViewModel: BaseViewModel {
             output.image.value = "profile_\(initialImage)"
         }
     }
+    private func setMBTI() {
+        if UserDefaultsManager.used {
+            guard let list = UserDefaultsManager.mbti.first else {return}
+            output.preparedMBTI.value = list.value
+            for i in 0...3 {
+                input.selectedButtons.value[i] = (list.key[i], list.value[i])
+            }
+            print(input.selectedButtons.value)
+            checkMbtiIsValid()
+        }
+    }
     private func saveData() {
         guard let nickname = input.finishButtonTrigger.value
         else {return}
-        UserDefaultsManager.nickname = nickname
-        UserDefaultsManager.profileImage = initialImage
-        UserDefaultsManager.used = true
-        UserDefaultsManager.mbti = input.selectedButtons.value.compactMap{$0}.joined()
         if !UserDefaultsManager.used {
             UserDefaultsManager.signDate = Date().DateToString()
         }
+        UserDefaultsManager.nickname = nickname
+        UserDefaultsManager.profileImage = initialImage
+        UserDefaultsManager.used = true
+        let mbtiKey = input.selectedButtons.value.compactMap{$0.0}.joined()
+        let mbtiValue = input.selectedButtons.value.compactMap{$0.1}
+        UserDefaultsManager.mbti = [mbtiKey : mbtiValue]
+        
+        
+
     }
     private func isValidNickname() {
+        
         guard let input = input.nickname.value else {return}
         let trimmedInput = input.trimmingCharacters(in: .whitespacesAndNewlines)
         var description : String

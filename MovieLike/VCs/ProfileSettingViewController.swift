@@ -17,8 +17,6 @@ final class ProfileSettingViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
         mainView.nicknameTextField.becomeFirstResponder()
         setAction()
         bindData()
@@ -28,20 +26,23 @@ final class ProfileSettingViewController: UIViewController {
         viewModel.isEditMode.bind { editMode in
             self.setNavigationBar(mode: editMode)
         }
-        
+        viewModel.output.preparedMBTI.bind { status in
+            self.setMBTIButtonStatus(list : status)
+        }
         viewModel.output.image.bind { img in
             self.mainView.profileImageButton.setImage(UIImage(named: img), for: .normal)
         }
-        viewModel.output.descriptionLabel.lazyBind { text in
+        viewModel.output.descriptionLabel.bind { text in
             self.mainView.descriptionLabel.text = text
         }
-        viewModel.output.nicknameIsValid.lazyBind { bool in
+        viewModel.output.nicknameIsValid.bind { bool in
             self.mainView.descriptionLabel.textColor = bool ? .MyBlue : .red
         }
         
         viewModel.output.isButtonEnable.bind { bool in
             self.mainView.finishButton.isEnabled = bool
             self.changeFinishButtonColor(isenabled: bool)
+            self.navigationItem.rightBarButtonItem?.isEnabled = bool
         }
         
     }
@@ -87,11 +88,11 @@ final class ProfileSettingViewController: UIViewController {
         changeButtonColor(buttons: buttons)
 
         if buttons[0].isSelected || buttons[1].isSelected {
-            let selected = buttons[0].isSelected ? buttons[0] : buttons[1]
-            viewModel.input.selectedButtons.value[stackview.tag] = selected.title(for: .normal)
+            let selected = buttons[0].isSelected ? (buttons[0].title(for: .normal), 0) : (buttons[1].title(for: .normal), 1)
+            viewModel.input.selectedButtons.value[stackview.tag] = selected
 
         }else {
-            viewModel.input.selectedButtons.value[stackview.tag] = nil
+            viewModel.input.selectedButtons.value[stackview.tag] = (nil,nil)
         }
         
     }
@@ -139,7 +140,7 @@ final class ProfileSettingViewController: UIViewController {
     }
     @objc func saveProfile() {
         viewModel.input.finishButtonTrigger.value = mainView.nicknameTextField.text
-
+        dismiss(animated: true)
     }
     @objc func finishButtonClicked() {
         viewModel.input.finishButtonTrigger.value = mainView.nicknameTextField.text
@@ -160,6 +161,15 @@ final class ProfileSettingViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         viewModel.output.preparedNickname.bind { nickname in
             self.mainView.nicknameTextField.text = nickname
+        }
+
+    }
+    private func setMBTIButtonStatus(list:[Int]) {
+        for (idx,selected) in list.enumerated() {
+            let buttons = mainView.stackViews[idx].arrangedSubviews.map{$0 as? UIButton}
+            guard let buttons = buttons as? [UIButton] else {return}
+            buttons[selected].isSelected = true
+            changeButtonColor(buttons: buttons)
         }
     }
     @objc func profileImageTapped() {

@@ -22,4 +22,13 @@ extension String {
     func imagePathFormat() -> String {
         return "https://image.tmdb.org/t/p/w500" + self
     }
+    subscript(idx: Int) -> String? {
+        guard (0..<count).contains(idx) else {
+            return nil
+        }
+        let result = index(startIndex, offsetBy: idx)
+        return String(self[result])
+    }
+    
 }
+
