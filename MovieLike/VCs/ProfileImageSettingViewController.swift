@@ -10,24 +10,36 @@ import UIKit
 final class ProfileImageSettingViewController: BaseViewController {
 
     private let mainView = ProfileImageSettingView()
-    var selectedItem : Int?
-    var passData : ((Int?) -> (Int?))? 
-    var editProfile = false
+    let viewModel = ProfileImageSettingViewModel()
+//    var selectedItem : Int?
+//    var passData : ((Int?) -> (Int?))? 
+//    var editProfile = false
     override func loadView() {
         view = mainView
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        if editProfile {
+        setDelegate()
+        viewModel.input.settingImageTrigger.value = ()
+    
+        bindData()
+    }
+    private func bindData() {
+        viewModel.isEditMode.bind { editMode in
+            self.setNavigationBar(mode: editMode)
+        }
+        viewModel.output.selectedItem.bind { num in
+            guard let num else {return}
+            self.mainView.selectedImage.image = UIImage(named: "profile_\(num)")
+        }
+    }
+    
+    private func setNavigationBar(mode: Bool) {
+        if mode {
             navigationItem.setBarTitleView(title: "프로필 이미지 편집")
         } else {
             navigationItem.setBarTitleView(title: "프로필 이미지 설정")
         }
-
-        selectedItem = passData?(nil)
-        setDelegate()
-        mainView.selectedImage.image = UIImage(named: "profile_\(selectedItem ?? 0)")
-    
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(backToProfileSetting))
         navigationItem.leftBarButtonItem?.tintColor = .MyBlue
     }
@@ -36,7 +48,7 @@ final class ProfileImageSettingViewController: BaseViewController {
         mainView.profileImages.dataSource = self
     }
     @objc func backToProfileSetting() {
-        passData?(selectedItem)
+        viewModel.input.passData.value?(viewModel.output.selectedItem.value)
         navigationController?.popViewController(animated: true)
     }
     override func viewDidLayoutSubviews() {
@@ -55,12 +67,11 @@ extension ProfileImageSettingViewController: UICollectionViewDelegate, UICollect
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfileImageCollectionViewCell.id, for: indexPath) as? ProfileImageCollectionViewCell else {return UICollectionViewCell()}
         
-        cell.configImage(itemidx: indexPath.item, selected: selectedItem!)
+        cell.configImage(itemidx: indexPath.item, selected: viewModel.output.selectedItem.value!)
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        selectedItem = indexPath.item
-        mainView.selectedImage.image = UIImage(named: "profile_\(selectedItem ?? 0)")
+        viewModel.input.didSelectedItemIndex.value = indexPath.item
         collectionView.reloadData()
     }
     

@@ -17,7 +17,17 @@ final class ProfileSettingView: BaseView {
     let cameraSymbol = UIImageView()
     private let cameraBack = UIView()
     
+    let mbtiLabel = UILabel()
     
+    let mbtiStackView = UIStackView()
+    
+    let EIStackView = UIStackView()
+    let SNStackView = UIStackView()
+    let TFStackView = UIStackView()
+    let JPStackView = UIStackView()
+    
+    lazy var stackViews = [EIStackView, SNStackView, TFStackView, JPStackView]
+
     override func configureHierachy() {
         addSubview(profileImageButton)
         addSubview(nicknameTextField)
@@ -25,6 +35,12 @@ final class ProfileSettingView: BaseView {
         addSubview(finishButton)
         addSubview(cameraBack)
         addSubview(cameraSymbol)
+        addSubview(mbtiLabel)
+        addSubview(mbtiStackView)
+        mbtiStackView.addArrangedSubview(EIStackView)
+        mbtiStackView.addArrangedSubview(SNStackView)
+        mbtiStackView.addArrangedSubview(TFStackView)
+        mbtiStackView.addArrangedSubview(JPStackView)
     }
     override func configureLayout() {
         profileImageButton.snp.makeConstraints { make in
@@ -49,12 +65,57 @@ final class ProfileSettingView: BaseView {
         descriptionLabel.snp.makeConstraints { make in
             make.top.equalTo(nicknameTextField.snp.bottom).offset(8)
             make.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(16)
+            make.height.equalTo(17)
         }
+        mbtiLabel.snp.makeConstraints { make in
+            make.top.equalTo(descriptionLabel.snp.bottom).offset(50)
+            make.leading.equalTo(safeAreaLayoutGuide).offset(8)
+            make.height.equalTo(20)
+            make.width.equalTo(50)
+        }
+        arrangeStackView()
+        mbtiStackView.snp.makeConstraints { make in
+            make.top.equalTo(mbtiLabel)
+            make.trailing.equalTo(safeAreaLayoutGuide).inset(8)
+            make.width.equalTo(270)
+            make.height.equalTo(130)        }
+
         finishButton.snp.makeConstraints { make in
-            make.top.equalTo(descriptionLabel.snp.bottom).offset(20)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(20)
             make.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(8)
             make.height.equalTo(40)
         }
+        
+
+    }
+    private func arrangeStackView() {
+        mbtiStackView.backgroundColor = .white
+        mbtiStackView.axis = .horizontal
+        mbtiStackView.spacing = 10
+        
+        let charList = [["E", "I"], ["S", "N"], ["T", "F"], ["J", "P"]]
+        
+        
+        for (idx, stackview) in stackViews.enumerated() {
+            stackview.axis = .vertical
+            stackview.spacing = 10
+            stackview.tag = idx
+            for char in charList[idx] {
+                let button = UIButton()
+                button.setTitle(char, for: .normal)
+                button.setTitleColor(.MyGray, for: .normal)
+                button.layer.borderWidth = 1
+                button.layer.borderColor = UIColor.MyGray
+                    .cgColor
+                stackview.addArrangedSubview(button)
+                
+                button.snp.makeConstraints { make in
+                    make.size.equalTo(60)
+                }
+            }
+            
+        }
+        
     }
     override func configureView() {
         backgroundColor = .black
@@ -65,6 +126,7 @@ final class ProfileSettingView: BaseView {
         cameraSymbol.image = UIImage(systemName: "camera.circle.fill")
         cameraSymbol.tintColor = .MyBlue
         cameraBack.backgroundColor = .white
+        mbtiLabel.labelDesign(inputText: "MBTI", size: 16, weight: .bold)
 
     }
     func updateViewLayout() {
