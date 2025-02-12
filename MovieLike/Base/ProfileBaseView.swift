@@ -16,6 +16,7 @@ class ProfileBaseView: BaseView {
     let dateLabel = UILabel()
     let angleBracket = UIImageView()
     let movieboxButton = UIButton()
+    let mbtiLabel = UILabel()
     
     override func configureHierachy() {
         addSubview(grayBackView)
@@ -24,6 +25,7 @@ class ProfileBaseView: BaseView {
         grayBackView.addSubview(dateLabel)
         grayBackView.addSubview(angleBracket)
         grayBackView.addSubview(movieboxButton)
+        grayBackView.addSubview(mbtiLabel)
     }
     override func configureLayout() {
         grayBackView.snp.makeConstraints { make in
@@ -42,6 +44,11 @@ class ProfileBaseView: BaseView {
             make.top.equalTo(nickname.snp.bottom).offset(6)
             make.leading.equalTo(profileImage.snp.trailing).offset(8)
         }
+        mbtiLabel.snp.makeConstraints { make in
+            make.top.equalTo(dateLabel.snp.bottom).offset(6)
+            make.leading.equalTo(dateLabel)
+            make.height.equalTo(17)
+        }
         angleBracket.snp.makeConstraints { make in
             make.centerY.equalTo(profileImage)
             make.trailing.equalToSuperview().inset(16)
@@ -58,11 +65,13 @@ class ProfileBaseView: BaseView {
 
         nickname.labelDesign(inputText: "nickname", size: 16, weight : .bold, color: .white)
         dateLabel.labelDesign(inputText: "25.01.01 가입", size: 12, color: .MylightGray)
+        mbtiLabel.labelDesign(inputText: "mbti", size: 12, color: .MylightGray)
         angleBracket.image = UIImage(systemName: "chevron.right")
         angleBracket.tintColor = .MyGray
         
         movieboxButton.backgroundColor = .MyBlue.withAlphaComponent(0.5)
         movieboxButton.setButtonTitle(title: "0 개의 무비박스 보관중", color: UIColor.white, size: 16, weight: .bold)
+        
     }
     
     func updateViewLayout()
@@ -78,10 +87,10 @@ class ProfileBaseView: BaseView {
     }
     
     func updateProfile() {
-        let data = UserDefaultsManager.shared
-        profileImage.image = UIImage(named: "profile_\(data.profileImage)")
-        nickname.text = data.nickname
-        dateLabel.text = data.signDate + " 가입"
-        movieboxButton.setButtonTitle(title: "\(data.like.count) 개의 무비박스 보관중", color: UIColor.white, size: 16, weight: .bold)
+        profileImage.image = UIImage(named: "profile_\(UserDefaultsManager.profileImage)")
+        nickname.text = UserDefaultsManager.nickname
+        dateLabel.text = UserDefaultsManager.signDate + " 가입"
+        mbtiLabel.text = UserDefaultsManager.mbti
+        movieboxButton.setButtonTitle(title: "\(UserDefaultsManager.like.count) 개의 무비박스 보관중", color: UIColor.white, size: 16, weight: .bold)
     }
 }

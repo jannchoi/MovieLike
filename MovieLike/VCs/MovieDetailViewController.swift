@@ -9,16 +9,8 @@ import UIKit
 
 final class MovieDetailViewController: UIViewController {
     private let mainView = MovieDetailView()
-    var movieId : Int?
-
-    var releaseDate : String?
-    var rate : String?
-    var genre : [Int]?
-    var movieTitle: String?
-    var synopsis : String?
-    private var backdropImg = [FileDetail]()
-    private var posterImage = [FileDetail]()
-    private var castList = [CastDetail]()
+    
+    let viewModel = MovieDetailViewModel()
     
     override func loadView() {
         view = mainView
@@ -26,26 +18,83 @@ final class MovieDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         mainView.moreButton.addTarget(self, action: #selector(toggleSynopsis), for: .touchUpInside)
-        mainView.synopsisShort.text = synopsis
-        mainView.synopsisLong.text = synopsis
-        
         mainView.backDropView.showsHorizontalScrollIndicator = false
         mainView.backDropView.isPagingEnabled = true
         
         setDelegate()
         navigationBarDesign()
-        print(self.navigationController)
-        loadData()
+        bindData()
+
+        
+    }
+    private func bindData() {
+        viewModel.input.synopsis.bind { text in
+            self.mainView.synopsisShort.text = text
+            self.mainView.synopsisLong.text = text
+        }
+        viewModel.input.movieTitle.bind { title in
+            self.navigationItem.title = title
+        }
+        viewModel.output.outputMovieId.bind { id in
+            guard let id else {return}
+            self.navigationItem.setHeartButton(id)
+        }
+        viewModel.output.backdropImage.lazyBind { _ in
+            self.mainView.backDropView.reloadData()
+        }
+        viewModel.output.posterImage.lazyBind { _ in
+            self.mainView.posterView.reloadData()
+        }
+        viewModel.output.errorMessage.lazyBind { message in
+            self.showAlert(title: "ERROR", text: message, button: nil)
+        }
+        viewModel.output.castList.lazyBind { _ in
+            self.mainView.castView.reloadData()
+        }
         setInfoLabel()
+    }
+    private func setInfoLabel() {
+        viewModel.input.releaseDate.bind { releasedate in
+            guard let date = self.mainView.infoStackView.arrangedSubviews[0] as? UIButton else {return}
+            date.setButtonTitle(title: (releasedate) + "   | ", color: UIColor.MyGray, size: 12)
+            date.setImage(UIImage(systemName: "calendar"), for: .normal)
+            date.tintColor = .MyGray
+            date.isUserInteractionEnabled = false
+        }
+        viewModel.input.rate.bind { rate in
+            guard let tempRate = self.mainView.infoStackView.arrangedSubviews[1] as? UIButton else {return}
+            tempRate.setButtonTitle(title: (rate) + "   | ", color: UIColor.MyGray, size: 12)
+            tempRate.setImage(UIImage(systemName: "star.fill"), for: .normal)
+            tempRate.tintColor = .MyGray
+            tempRate.isUserInteractionEnabled = false
+        }
+        viewModel.input.genre.bind { list in
+            guard let tempGenre = self.mainView.infoStackView.arrangedSubviews[2] as? UIButton else {return}
+            var genretotal = [String]()
+
+            if let list, list.count > 0 {
+                let min = min(list.count, 2) - 1
+                for i in 0...min {
+                    genretotal.append(GenreManager.shared.getGenre(list[i]) ?? "")
+                }
+            }
+            let genreStr = genretotal.joined(separator: ",")
+            tempGenre.setButtonTitle(title: genreStr, color: UIColor.MyGray, size: 12)
+            tempGenre.setImage(UIImage(systemName: "film.fill"), for: .normal)
+            tempGenre.tintColor = .MyGray
+            tempGenre.isUserInteractionEnabled = false
+        }
+
         
+
         
-        
+
     }
     @objc func backButtonTapped() {
         navigationController?.popViewController(animated: true)
     }
     private func setPager() {
-        mainView.pager.numberOfPages = min(backdropImg.count, 5)
+        mainView.pager.numberOfPages = min(viewModel.output.backdropImage.value.count, 5)
         mainView.pager.currentPage = 0
         
         mainView.pager.pageIndicatorTintColor = .MyGray
@@ -56,6 +105,7 @@ final class MovieDetailViewController: UIViewController {
         super.viewDidLayoutSubviews()
         DispatchQueue.main.async {
             self.mainView.updateViewLayout()
+            self.setPager()
         }
         
     }
@@ -65,12 +115,8 @@ final class MovieDetailViewController: UIViewController {
     }
     
     private func navigationBarDesign() {
-        navigationItem.title = movieTitle ?? "title"
-        
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(backButtonTapped))
         navigationItem.leftBarButtonItem?.tintColor = .MyBlue
-        guard let movieId else {return}
-        navigationItem.setHeartButton(movieId)
     }
 
     private func setDelegate() {
@@ -105,81 +151,6 @@ final class MovieDetailViewController: UIViewController {
         }
         view.layoutIfNeeded()
     }
-    private func loadData() {
-        guard let movieId else {return}
-        let group = DispatchGroup()
-        group.enter()
-        NetworkManager.shared.callRequst(api: .movieImage(id: movieId), model: MovieImage.self) { response in
-            switch response {
-            case .success(let value) :
-                self.backdropImg = value.backdrops
-                self.posterImage = value.posters
-                group.leave()
-            case .failure(let failure) :
-                if let errorType = failure as? NetworkError {
-                    self.showAlert(title: "Error", text: errorType.errorMessage, button: nil)
-                }else {
-                    print(failure.localizedDescription)
-                }
-                group.leave()
-            }
-        }
-        group.enter()
-        NetworkManager.shared.callRequst(api: .cast(id: movieId), model: MovieCredit.self) {
-            response in
-            switch response {
-            case .success(let value) :
-                self.castList = value.cast
-                group.leave()
-                
-            case .failure(let failure) :
-                if let errorType = failure as? NetworkError {
-                    self.showAlert(title: "Error", text: errorType.errorMessage, button: nil)
-                }else {
-                    print(failure.localizedDescription)
-                }
-                group.leave()
-            }
-        }
-        group.notify(queue: .main) {
-            self.mainView.backDropView.reloadData()
-            self.setPager()
-            self.mainView.castView.reloadData()
-            self.mainView.posterView.reloadData()
-        }
-    }
-    
-    private func setInfoLabel() {
-
-        guard let date = mainView.infoStackView.arrangedSubviews[0] as? UIButton else {return}
-        date.setButtonTitle(title: (releaseDate ?? "None") + "   | ", color: UIColor.MyGray, size: 12)
-        date.setImage(UIImage(systemName: "calendar"), for: .normal)
-        date.tintColor = .MyGray
-        date.isUserInteractionEnabled = false
-        
-        guard let tempRate = mainView.infoStackView.arrangedSubviews[1] as? UIButton else {return}
-        tempRate.setButtonTitle(title: (rate ?? "None") + "   | ", color: UIColor.MyGray, size: 12)
-        tempRate.setImage(UIImage(systemName: "star.fill"), for: .normal)
-        tempRate.tintColor = .MyGray
-        tempRate.isUserInteractionEnabled = false
-        
-        guard let tempGenre = mainView.infoStackView.arrangedSubviews[2] as? UIButton else {return}
-        var genretotal = [String]()
-
-        if let genre, genre.count > 0 {
-            let min = min(genre.count, 2) - 1
-            for i in 0...min {
-                genretotal.append(GenreManager.shared.getGenre(genre[i]) ?? "")
-            }
-        }
-        let genreStr = genretotal.joined(separator: ",")
-        tempGenre.setButtonTitle(title: genreStr, color: UIColor.MyGray, size: 12)
-        tempGenre.setImage(UIImage(systemName: "film.fill"), for: .normal)
-        tempGenre.tintColor = .MyGray
-        tempGenre.isUserInteractionEnabled = false
-    }
-    
-
 }
 
 extension MovieDetailViewController: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -187,13 +158,13 @@ extension MovieDetailViewController: UICollectionViewDelegate, UICollectionViewD
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch collectionView.tag {
         case 0:
-            if backdropImg.count >= 5 {
+            if viewModel.output.backdropImage.value.count >= 5 {
                 return 5
             } else {
-                return backdropImg.count
+                return viewModel.output.backdropImage.value.count
             }
-        case 1: return castList.count
-        default : return posterImage.count
+        case 1: return viewModel.output.castList.value.count
+        default : return viewModel.output.posterImage.value.count
 
         }
     }
@@ -202,17 +173,17 @@ extension MovieDetailViewController: UICollectionViewDelegate, UICollectionViewD
         switch collectionView.tag {
         case 0:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: BackDropCollectionViewCell.id, for: indexPath) as? BackDropCollectionViewCell else {return UICollectionViewCell()}
-            cell.configureData(item: backdropImg[indexPath.row])
+            cell.configureData(item: viewModel.output.backdropImage.value[indexPath.row])
             return cell
         case 1:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CastCollectionViewCell.id, for: indexPath) as? CastCollectionViewCell else {return UICollectionViewCell()}
-            cell.configureData(item: castList[indexPath.row])
+            cell.configureData(item: viewModel.output.castList.value[indexPath.row])
 
             return cell
         default :
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PosterCollectionViewCell.id, for: indexPath) as? PosterCollectionViewCell else {return UICollectionViewCell()}
             
-            cell.configureData(item: posterImage[indexPath.row])
+            cell.configureData(item: viewModel.output.posterImage.value[indexPath.row])
             
             return cell
         }

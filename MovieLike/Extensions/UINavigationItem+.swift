@@ -18,11 +18,11 @@ extension UINavigationItem {
     
     @objc func heartButtonTapped(_ sender: UIBarButtonItem) {
         var img : UIImage
-        if let idx = UserDefaultsManager.shared.like.firstIndex(of: sender.tag) {
-            UserDefaultsManager.shared.like.remove(at: idx)
+        if let idx = UserDefaultsManager.like.firstIndex(of: sender.tag) {
+            UserDefaultsManager.like.remove(at: idx)
             img = UIImage(systemName: "heart")!
         } else {
-            UserDefaultsManager.shared.like.append(sender.tag)
+            UserDefaultsManager.like.append(sender.tag)
             img = UIImage(systemName: "heart.fill")!
         }
         let btn = UIBarButtonItem(image: img, style: .plain, target: self, action: #selector(heartButtonTapped))
@@ -33,7 +33,7 @@ extension UINavigationItem {
     
     func setHeartButton(_ tag: Int) {
         var img : UIImage
-        if UserDefaultsManager.shared.like.contains(tag) {
+        if UserDefaultsManager.like.contains(tag) {
             img = UIImage(systemName: "heart.fill")!
         } else {
             img = UIImage(systemName: "heart")!

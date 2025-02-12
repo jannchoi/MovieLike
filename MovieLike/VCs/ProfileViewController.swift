@@ -10,7 +10,10 @@ import UIKit
 final class ProfileViewController: UIViewController {
 
     private let mainView = ProfileView()
-    private let category = ["자주 묻는 질문", "1:1문의", "알림 설정", "탈퇴하기"]
+    //private let category = ["자주 묻는 질문", "1:1문의", "알림 설정", "탈퇴하기"]
+    
+    let viewModel = ProfileViewModel()
+    
     override func loadView() {
         view = mainView
     }
@@ -42,7 +45,7 @@ final class ProfileViewController: UIViewController {
     }
     @objc func profileViewTapped() {
         let vc = ProfileSettingViewController()
-        vc.editProfile = true
+        vc.viewModel.isEditMode.value = true
         let nav = UINavigationController(rootViewController: vc)
         nav.sheetPresentationController?.prefersGrabberVisible = true
         present(nav, animated: true)
@@ -61,12 +64,12 @@ final class ProfileViewController: UIViewController {
 }
 extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return category.count
+        return viewModel.output.category.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewCell.id) as? ProfileTableViewCell else {return UITableViewCell()}
-        cell.configureData(inputText: category[indexPath.row])
+        cell.configureData(inputText: viewModel.output.category[indexPath.row])
         return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

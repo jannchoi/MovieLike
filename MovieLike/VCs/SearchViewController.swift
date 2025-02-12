@@ -63,7 +63,6 @@ final class SearchViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         viewModel.input.fromSearchButton.value = false
-        print(UserDefaultsManager.shared.searchedTerm)
     }
     private func navigationBarDesign() {
         navigationItem.setBarTitleView(title: "영화 검색")
@@ -139,12 +138,12 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc = MovieDetailViewController()
         let item = viewModel.output.movieList.value[indexPath.row]
-        vc.movieId = item.id
-        vc.releaseDate = item.release_date
-        vc.rate = String(item.vote_average ?? 0.0)
-        vc.movieTitle = item.title
-        vc.synopsis = item.overview
-        vc.genre = item.genre_ids
+        vc.viewModel.input.movieId.value = item.id
+        vc.viewModel.input.releaseDate.value = item.release_date ?? "None"
+        vc.viewModel.input.rate.value = String(item.vote_average ?? 0.0)
+        vc.viewModel.input.movieTitle.value = item.title
+        vc.viewModel.input.synopsis.value = item.overview ?? "None"
+        vc.viewModel.input.genre.value = item.genre_ids
         navigationController?.pushViewController(vc, animated: true)
     }
 }

@@ -15,7 +15,7 @@ final class SearchWordsCollectionViewCell: BaseCollectionViewCell {
     let xButton = UIButton()
     
     func configureData(item: Int) {
-        word.text = UserDefaultsManager.shared.searchedTerm[item]
+        word.text = UserDefaultsManager.searchedTerm[item]
         xButton.tag = item
     }
     override func configureHierachy() {

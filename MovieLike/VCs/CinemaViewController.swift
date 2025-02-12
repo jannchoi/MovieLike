@@ -35,8 +35,6 @@ final class CinemaViewController: UIViewController {
                 self.showAlert(title: "Error", text: message, button: nil)
             }
         }
-
-        
         viewModel.output.isShowSearchedWords.lazyBind { bool in
             self.switchSearchedTermView(isShowTable: bool)
             
@@ -57,7 +55,7 @@ final class CinemaViewController: UIViewController {
 
     @objc func profileViewTapped() {
         let vc = ProfileSettingViewController()
-        vc.editProfile = true
+        vc.viewModel.isEditMode.value = true
         let nav = UINavigationController(rootViewController: vc)
         nav.modalPresentationStyle = .fullScreen
         present(nav, animated: true)
@@ -71,7 +69,8 @@ final class CinemaViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationBarDesign()
         mainView.profileView.updateProfile()
-        viewModel.userdefaultsSearchedTerm.value = UserDefaultsManager.shared.searchedTerm
+        viewModel.userdefaultsSearchedTerm.value = UserDefaultsManager.searchedTerm
+        mainView.movieCollection.reloadData()
 
     }
     
@@ -117,7 +116,7 @@ final class CinemaViewController: UIViewController {
     }
     @objc func updateMoviebox() {
 
-        mainView.profileView.movieboxButton.setButtonTitle(title: "\(UserDefaultsManager.shared.like.count) 개의 무비박스 보관중", color: UIColor.white, size: 16, weight: .bold)
+        mainView.profileView.movieboxButton.setButtonTitle(title: "\(UserDefaultsManager.like.count) 개의 무비박스 보관중", color: UIColor.white, size: 16, weight: .bold)
     }
 }
 
@@ -125,7 +124,7 @@ extension CinemaViewController: UICollectionViewDelegate, UICollectionViewDataSo
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch collectionView.tag {
-        case 0 : return UserDefaultsManager.shared.searchedTerm.count
+        case 0 : return UserDefaultsManager.searchedTerm.count
         default: return viewModel.output.movieList.value.count
         }
     }
@@ -150,19 +149,19 @@ extension CinemaViewController: UICollectionViewDelegate, UICollectionViewDataSo
         switch collectionView.tag {
         case 0 :
             let vc = SearchViewController()
-            let word = UserDefaultsManager.shared.searchedTerm[indexPath.item]
+            let word = UserDefaultsManager.searchedTerm[indexPath.item]
             vc.viewModel.input.searchedTerm.value = word
             vc.mainView.searchBar.text = word
             navigationController?.pushViewController(vc, animated: true)
         default :
             let vc = MovieDetailViewController()
             let item = viewModel.output.movieList.value[indexPath.item]
-            vc.movieId = item.id
-            vc.releaseDate = item.release_date
-            vc.rate = String(item.vote_average ?? 0.0)
-            vc.movieTitle = item.title
-            vc.synopsis = item.overview
-            vc.genre = item.genre_ids
+            vc.viewModel.input.movieId.value = item.id
+            vc.viewModel.input.releaseDate.value = item.release_date ?? "None"
+            vc.viewModel.input.rate.value = String(item.vote_average ?? 0.0)
+            vc.viewModel.input.movieTitle.value = item.title
+            vc.viewModel.input.synopsis.value = item.overview ?? "None"
+            vc.viewModel.input.genre.value = item.genre_ids
 
             navigationController?.pushViewController(vc, animated: true)
 

@@ -22,7 +22,7 @@ class CinemaViewModel: BaseViewModel {
         var isShowSearchedWords: Observable<Bool> = Observable(false)
     }
     
-    var userdefaultsSearchedTerm: Observable<[String]> =  Observable(UserDefaultsManager.shared.searchedTerm)
+    var userdefaultsSearchedTerm: Observable<[String]> =  Observable(UserDefaultsManager.searchedTerm)
     
     init() {
         input = Input()
@@ -37,7 +37,7 @@ class CinemaViewModel: BaseViewModel {
             self.switchSearchedTermView()
         }
         self.input.updateSearchedTerm.bind { _ in
-            self.userdefaultsSearchedTerm.value = UserDefaultsManager.shared.searchedTerm
+            self.userdefaultsSearchedTerm.value = UserDefaultsManager.searchedTerm
             self.switchSearchedTermView()
         }
         userdefaultsSearchedTerm.bind { _ in
@@ -45,12 +45,12 @@ class CinemaViewModel: BaseViewModel {
         }
         input.deleteSearchedTerm.lazyBind { target in
             guard let target else {return}
-            UserDefaultsManager.shared.searchedTerm.remove(at: target)
-            self.userdefaultsSearchedTerm.value = UserDefaultsManager.shared.searchedTerm
+            UserDefaultsManager.searchedTerm.remove(at: target)
+            self.userdefaultsSearchedTerm.value = UserDefaultsManager.searchedTerm
         }
     }
     private func resetSearchedTerm() {
-        UserDefaultsManager.shared.searchedTerm.removeAll()
+        UserDefaultsManager.searchedTerm.removeAll()
     }
     private func switchSearchedTermView() {
         if self.userdefaultsSearchedTerm.value.isEmpty {

@@ -29,14 +29,14 @@ final class ProfileSettingViewController: UIViewController {
             self.setNavigationBar(mode: editMode)
         }
         
-        viewModel.output.image.lazyBind { img in
+        viewModel.output.image.bind { img in
             self.mainView.profileImageButton.setImage(UIImage(named: img), for: .normal)
         }
         viewModel.output.descriptionLabel.lazyBind { text in
             self.mainView.descriptionLabel.text = text
         }
         viewModel.output.nicknameIsValid.lazyBind { bool in
-            self.mainView.descriptionLabel.textColor = bool ? .blue : .red
+            self.mainView.descriptionLabel.textColor = bool ? .MyBlue : .red
         }
         
         viewModel.output.isButtonEnable.bind { bool in
@@ -55,7 +55,7 @@ final class ProfileSettingViewController: UIViewController {
         if isenabled {
             color = .MyBlue
         } else {
-            color = .MyBlue
+            color = .MyGray
         }
         mainView.finishButton.backgroundColor = color
         mainView.finishButton.layer.borderColor = color.cgColor
@@ -102,7 +102,7 @@ final class ProfileSettingViewController: UIViewController {
                 button.layer.borderColor = UIColor.MyBlue.cgColor
                 button.setTitleColor(.white, for: .normal)
             } else {
-                button.backgroundColor = .white
+                button.backgroundColor = .black
                 button.layer.borderColor = UIColor.MyGray.cgColor
                 button.setTitleColor(.MyGray, for: .normal)
             }

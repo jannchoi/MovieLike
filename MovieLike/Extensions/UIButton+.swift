@@ -13,7 +13,7 @@ extension UIButton {
     }
     
     func setHeartButton() {
-        if UserDefaultsManager.shared.like.contains(self.tag) {
+        if UserDefaultsManager.like.contains(self.tag) {
             self.setImage(UIImage(systemName: "heart.fill"), for: .normal)
         } else {
             self.setImage(UIImage(systemName: "heart"), for: .normal)
@@ -24,11 +24,11 @@ extension UIButton {
         self.addTarget(self, action: #selector(heartButtonTapped3), for: .touchUpInside)
     }
     @objc func heartButtonTapped3(_ sender: UIButton) {
-        if let idx = UserDefaultsManager.shared.like.firstIndex(of: sender.tag) {
-            UserDefaultsManager.shared.like.remove(at: idx)
+        if let idx = UserDefaultsManager.like.firstIndex(of: sender.tag) {
+            UserDefaultsManager.like.remove(at: idx)
             self.setImage(UIImage(systemName: "heart"), for: .normal)
         } else {
-            UserDefaultsManager.shared.like.append(sender.tag)
+            UserDefaultsManager.like.append(sender.tag)
             self.setImage(UIImage(systemName: "heart.fill"), for: .normal)
         }
     }

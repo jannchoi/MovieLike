@@ -13,7 +13,7 @@ final class ProfileSettingViewModel: BaseViewModel {
     struct Input {
         
         var finishButtonTrigger: Observable<String?> = Observable(nil)
-        var nickname: Observable<String?> = Observable(UserDefaultsManager.shared.nickname)
+        var nickname: Observable<String?> = Observable(UserDefaultsManager.nickname)
         var selectedButtons: Observable<[String?]> = Observable([nil,nil,nil,nil])
         
     }
@@ -62,29 +62,30 @@ final class ProfileSettingViewModel: BaseViewModel {
         }
     }
     private func prepareNickname() {
-        if UserDefaultsManager.shared.nickname != "" {
-            output.preparedNickname.value = UserDefaultsManager.shared.nickname
-            isValidNickname()
+        if UserDefaultsManager.nickname != "None" {
+            output.preparedNickname.value = UserDefaultsManager.nickname
+        } else {
+            output.preparedNickname.value = ""
         }
+        isValidNickname()
     }
     private func setProfileImage() {
-        let userdefaults = UserDefaultsManager.shared
-        
-        if initialImage != userdefaults.profileImage && userdefaults.profileImage != 0 {
+        if initialImage != UserDefaultsManager.profileImage && UserDefaultsManager.profileImage != 0 {
             output.image.value = "profile_\(initialImage)"
         } else {
-            initialImage = userdefaults.profileImage
+            initialImage = UserDefaultsManager.profileImage
             output.image.value = "profile_\(initialImage)"
         }
     }
     private func saveData() {
         guard let nickname = input.finishButtonTrigger.value
         else {return}
-        UserDefaultsManager.shared.nickname = nickname
-        UserDefaultsManager.shared.profileImage = initialImage
-        UserDefaultsManager.shared.used = true
-        if !UserDefaultsManager.shared.used {
-            UserDefaultsManager.shared.signDate = Date().DateToString()
+        UserDefaultsManager.nickname = nickname
+        UserDefaultsManager.profileImage = initialImage
+        UserDefaultsManager.used = true
+        UserDefaultsManager.mbti = input.selectedButtons.value.compactMap{$0}.joined()
+        if !UserDefaultsManager.used {
+            UserDefaultsManager.signDate = Date().DateToString()
         }
     }
     private func isValidNickname() {

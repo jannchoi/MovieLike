@@ -89,7 +89,7 @@ final class ProfileSettingView: BaseView {
 
     }
     private func arrangeStackView() {
-        mbtiStackView.backgroundColor = .white
+        mbtiStackView.backgroundColor = .black
         mbtiStackView.axis = .horizontal
         mbtiStackView.spacing = 10
         
@@ -121,7 +121,7 @@ final class ProfileSettingView: BaseView {
         backgroundColor = .black
         nicknameTextField.borderStyle = .none
                 descriptionLabel.labelDesign(inputText: "2글자 이상 10글자 미만으로 설정해주세요", size: 12, color: .MyBlue)
-        finishButton.setButtonTitle(title: "완료", color: UIColor.MyBlue, size: 16, weight: .bold)
+        finishButton.setButtonTitle(title: "완료", color: UIColor.white, size: 16, weight: .bold)
         finishButton.backgroundColor = .black
         cameraSymbol.image = UIImage(systemName: "camera.circle.fill")
         cameraSymbol.tintColor = .MyBlue

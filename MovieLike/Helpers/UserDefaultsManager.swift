@@ -7,59 +7,38 @@
 
 import Foundation
 
-class UserDefaultsManager {
-    static let shared = UserDefaultsManager()
+@propertyWrapper struct MyDefaults<T> {
     
-    private init() { }
+    let key: String
+    let empty: T
     
-    var used: Bool {
+    var wrappedValue: T {
         get {
-            UserDefaults.standard.bool(forKey: "used")
+            UserDefaults.standard.object(forKey: key) as? T ?? empty
         }
         set {
-            UserDefaults.standard.set(newValue, forKey: "used")
+            UserDefaults.standard.setValue(newValue, forKey: key)
         }
     }
-    
-    var nickname: String {
-        get {
-            UserDefaults.standard.string(forKey: "nickname") ?? ""
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: "nickname")
-        }
-    }
-    var profileImage: Int { 
-        get {
-            UserDefaults.standard.integer(forKey: "profileImage")
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: "profileImage")
-        }
-    }
-    var signDate: String{
-        get {
-            UserDefaults.standard.string(forKey: "signDate") ?? ""
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: "signDate")
-        }
-    }
+}
 
-    var like: [Int] {
-        get {
-            UserDefaults.standard.array(forKey: "like") as? [Int] ?? []
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: "like")
-        }
+enum UserDefaultsManager {
+    enum Key: String {
+        case used, nickname, profileImage, signDate, like, searchedTerm, mbti
     }
-    var searchedTerm: [String] {
-        get {
-            UserDefaults.standard.array(forKey: "searchedTerm") as? [String] ?? []
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: "searchedTerm")
-        }
-    }
+    
+    @MyDefaults(key: Key.used.rawValue, empty: false)
+    static var used
+    @MyDefaults(key: Key.nickname.rawValue, empty: "None")
+    static var nickname
+    @MyDefaults(key: Key.profileImage.rawValue, empty: 0)
+    static var profileImage
+    @MyDefaults(key: Key.signDate.rawValue, empty: "None")
+    static var signDate
+    @MyDefaults(key: Key.like.rawValue, empty: [Int]())
+    static var like
+    @MyDefaults(key: Key.searchedTerm.rawValue, empty: [String]())
+    static var searchedTerm
+    @MyDefaults(key: Key.mbti.rawValue, empty: "None")
+    static var mbti
 }

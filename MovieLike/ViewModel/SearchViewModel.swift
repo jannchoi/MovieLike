@@ -58,8 +58,8 @@ class SearchViewModel: BaseViewModel {
         let trimmedInputText = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
         page.value = 1
         output.movieList.value.removeAll()
-        if !UserDefaultsManager.shared.searchedTerm.contains(trimmedInputText) {
-            UserDefaultsManager.shared.searchedTerm.insert(trimmedInputText, at: 0)
+        if !UserDefaultsManager.searchedTerm.contains(trimmedInputText) {
+            UserDefaultsManager.searchedTerm.insert(trimmedInputText, at: 0)
         }
         callForRequest()
     }
