@@ -28,6 +28,7 @@ final class ProfileViewController: UIViewController {
         
         self.tabBarController?.navigationItem.title = "설정"
         self.tabBarController?.navigationItem.rightBarButtonItem = nil
+        self.tabBarController?.navigationItem.leftBarButtonItem = nil
 
     }
     @objc func userDefaultsChanged() {

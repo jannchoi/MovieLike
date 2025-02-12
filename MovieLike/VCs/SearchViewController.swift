@@ -20,7 +20,7 @@ final class SearchViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setDelegate()
-        navigationBarDesign()
+        
         mainView.tableView.isSkeletonable = true
         
         bindData()
@@ -47,7 +47,6 @@ final class SearchViewController: UIViewController {
             
         }
         viewModel.output.errorMessage.lazyBind { message in
-            print("errorMessage")
             guard let message else {return}
             self.showAlert(title: "Error", text: message, button: nil)
         }
@@ -55,9 +54,10 @@ final class SearchViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         viewModel.output.isFromSearchButton.bind { Bool in
-            print("isFromSearchButton")
             self.setFirstUI(bool: Bool)
         }
+        navigationBarDesign()
+        mainView.tableView.reloadData()
 
     }
     override func viewWillDisappear(_ animated: Bool) {
@@ -65,10 +65,10 @@ final class SearchViewController: UIViewController {
         viewModel.input.fromSearchButton.value = false
     }
     private func navigationBarDesign() {
-        navigationItem.setBarTitleView(title: "영화 검색")
-        
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(backButtonTapped))
-        navigationItem.leftBarButtonItem?.tintColor = .MyBlue
+        self.tabBarController?.navigationItem.title = "영화 검색"
+        self.tabBarController?.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(backButtonTapped))
+        self.tabBarController?.navigationItem.rightBarButtonItem = nil
+        self.tabBarController?.navigationItem.leftBarButtonItem?.tintColor = .MyBlue
         
     }
     private func setDelegate() {

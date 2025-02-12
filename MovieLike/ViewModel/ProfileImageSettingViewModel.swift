@@ -23,10 +23,7 @@ final class ProfileImageSettingViewModel: BaseViewModel {
     init() {
         input = Input()
         output = Output()
-        
-        print("ProfileImageSettingViewModel init")
 
-        
         transform()
     }
     func transform() {

@@ -16,7 +16,7 @@ final class TabBarController: UITabBarController {
         
     }
     private func configureTabBarController() {
-        let firstVC = CinemaViewController()
+        let firstVC = UINavigationController(rootViewController: CinemaViewController())
         firstVC.tabBarItem.title = "CINEMA"
         firstVC.tabBarItem.image = UIImage(systemName: "popcorn")
         
@@ -28,6 +28,8 @@ final class TabBarController: UITabBarController {
         thirdVC.tabBarItem.title = "PROFILE"
         thirdVC.tabBarItem.image = UIImage(systemName: "person.crop.circle")
         setViewControllers([firstVC, secondVC, thirdVC], animated: true)
+        
+        hidesBottomBarWhenPushed = false
     }
     
     func setupTabBarAppearence() {

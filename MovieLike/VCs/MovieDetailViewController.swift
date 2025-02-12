@@ -20,7 +20,6 @@ final class MovieDetailViewController: UIViewController {
         mainView.moreButton.addTarget(self, action: #selector(toggleSynopsis), for: .touchUpInside)
         mainView.backDropView.showsHorizontalScrollIndicator = false
         mainView.backDropView.isPagingEnabled = true
-        
         setDelegate()
         navigationBarDesign()
         bindData()
@@ -33,11 +32,11 @@ final class MovieDetailViewController: UIViewController {
             self.mainView.synopsisLong.text = text
         }
         viewModel.input.movieTitle.bind { title in
-            self.navigationItem.title = title
+            self.tabBarController?.navigationItem.title = title
         }
         viewModel.output.outputMovieId.bind { id in
             guard let id else {return}
-            self.navigationItem.setHeartButton(id)
+            self.tabBarController?.navigationItem.setHeartButton(id)
         }
         viewModel.output.backdropImage.lazyBind { _ in
             self.mainView.backDropView.reloadData()
@@ -111,8 +110,9 @@ final class MovieDetailViewController: UIViewController {
     }
     
     private func navigationBarDesign() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(backButtonTapped))
-        navigationItem.leftBarButtonItem?.tintColor = .MyBlue
+        self.tabBarController?.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(backButtonTapped))
+        self.tabBarController?.navigationItem.leftBarButtonItem?.tintColor = .MyBlue
+        self.tabBarController?.navigationItem.rightBarButtonItem?.tintColor = .MyBlue
     }
 
     private func setDelegate() {

@@ -61,7 +61,9 @@ final class CinemaViewController: UIViewController {
         present(nav, animated: true)
     }
     private func navigationBarDesign() {
+        self.navigationController?.navigationBar.isHidden = true
         self.tabBarController?.navigationItem.title = "오늘의 영화"
+        self.tabBarController?.navigationItem.leftBarButtonItem = nil
         self.tabBarController?.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .plain, target: self, action: #selector(searchButtonTapped))
         self.tabBarController?.navigationItem.rightBarButtonItem?.tintColor = .MyBlue
     }
@@ -162,7 +164,6 @@ extension CinemaViewController: UICollectionViewDelegate, UICollectionViewDataSo
             vc.viewModel.input.movieTitle.value = item.title
             vc.viewModel.input.synopsis.value = item.overview ?? "None"
             vc.viewModel.input.genre.value = item.genre_ids
-
             navigationController?.pushViewController(vc, animated: true)
 
         }

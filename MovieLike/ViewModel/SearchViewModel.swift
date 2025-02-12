@@ -40,15 +40,12 @@ class SearchViewModel: BaseViewModel {
     func transform() {
         
         input.fromSearchButton.lazyBind { bool in
-            print("fromSearchButton")
             self.output.isFromSearchButton.value = bool
         }
         input.prefetchTrigger.lazyBind { indexPaths in
-            print("prefetchTrigger")
             self.checkForPrefetch()
         }
         input.searchedTerm.lazyBind { _ in
-            print("searchedTerm")
             self.searchButtonClicked()
         }
         

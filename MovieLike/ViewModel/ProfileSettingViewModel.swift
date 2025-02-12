@@ -94,7 +94,6 @@ final class ProfileSettingViewModel: BaseViewModel {
             for i in 0...3 {
                 input.selectedButtons.value[i] = (list.key[i], list.value[i])
             }
-            print(input.selectedButtons.value)
             checkMbtiIsValid()
         }
     }
