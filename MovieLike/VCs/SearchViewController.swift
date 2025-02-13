@@ -30,7 +30,9 @@ final class SearchViewController: UIViewController {
     private func bindData() {
 
         viewModel.output.movieList.lazyBind { [weak self] _ in // 검색어를 통해 영화 리스트를 불러왔을 때
-            if ((self?.viewModel.isResultEmpty) != nil) { // 비어있으면 '검색어 없음'을 표시
+            print("movieList", self?.viewModel.output.movieList.value.count)
+
+            if !((self?.viewModel.isResultEmpty) != nil) { // 비어있으면 '검색어 없음'을 표시
                 self?.mainView.noSearchLabel.isHidden = false
                 self?.mainView.tableView.isHidden = true
                 return
@@ -130,8 +132,10 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchTableViewCell.id) as? SearchTableViewCell else {return UITableViewCell()}
+        let item = viewModel.output.movieList.value[indexPath.row]
+        cell.tag = item.id
         if let inputTxt = mainView.searchBar.text {
-            cell.configureData(item: viewModel.output.movieList.value[indexPath.row], txt: inputTxt)
+            cell.configureData(item: item, txt: inputTxt)
         }
         return cell
         

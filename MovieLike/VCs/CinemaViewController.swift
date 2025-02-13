@@ -116,10 +116,10 @@ final class CinemaViewController: UIViewController {
         viewModel.input.deleteSearchedTerm.value = sender.tag
 
     }
-    @objc func updateMoviebox() {
-
-        mainView.profileView.movieboxButton.setButtonTitle(title: "\(UserDefaultsManager.like.count) 개의 무비박스 보관중", color: UIColor.white, size: 16, weight: .bold)
-    }
+//    @objc func updateMoviebox() {
+//
+//        mainView.profileView.movieboxButton.setButtonTitle(title: "\(UserDefaultsManager.like.count) 개의 무비박스 보관중", color: UIColor.white, size: 16, weight: .bold)
+//    }
 }
 
 extension CinemaViewController: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -140,8 +140,9 @@ extension CinemaViewController: UICollectionViewDelegate, UICollectionViewDataSo
             return cell
         default :
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayMoviesCollectionViewCell.id, for: indexPath) as? TodayMoviesCollectionViewCell else {return UICollectionViewCell()}
-            cell.configureData(item: viewModel.output.movieList.value[indexPath.item])
-            cell.heartButton.addTarget(self, action: #selector(updateMoviebox), for: .touchUpInside)
+            let item = viewModel.output.movieList.value[indexPath.item]
+            cell.tag = item.id
+            cell.configureData(item: item)
             return cell
             
         }

@@ -16,14 +16,12 @@ class TodayMoviesCollectionViewCell: BaseCollectionViewCell {
     let posterImage = UIImageView()
     let title = UILabel()
     let descriptionLabel = UILabel()
-    let heartButton = UIButton()
+    private lazy var heartButton = HeartButton(id: tag)
     
     func configureData(item: MovieDetail) {
         posterImage.setOptionalImage(imgPath: item.poster_path)
         title.text = item.title
         descriptionLabel.text = item.overview
-        heartButton.tag = item.id
-        heartButton.setHeartButton()
     }
     
     override func configureHierachy() {
@@ -60,8 +58,7 @@ class TodayMoviesCollectionViewCell: BaseCollectionViewCell {
         
         title.labelDesign(inputText: "title", size: 16, weight: .bold, color: .white)
         descriptionLabel.labelDesign(inputText: "description", size: 12, color: .white, lines: 2)
-        heartButton.tintColor = .MyBlue
-        heartButton.addTargetToHeartButton()
+        heartButton.setAction()
     }
     
 }

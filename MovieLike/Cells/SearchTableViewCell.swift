@@ -17,7 +17,7 @@ final class SearchTableViewCell: BaseTableViewCell {
     private let titleLable = UILabel()
     private let dateLabel = UILabel()
     private let genreStack = UIStackView()
-    let heartButton = UIButton()
+    private lazy var heartButton = HeartButton(id: tag)
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: .default, reuseIdentifier: "SearchTableViewCell")
@@ -38,11 +38,6 @@ final class SearchTableViewCell: BaseTableViewCell {
         titleLable.labelDesign(inputText: item.title, size: 14, weight: .bold, color: .white, lines: 2)
         titleLable.ColoringSubString(subString: txt)
         dateLabel.labelDesign(inputText: item.release_date?.dateFormat() ?? "None", size: 12, color: .MylightGray)
-        
-        heartButton.tag = item.id
-        heartButton.setHeartButton()
-        
-        heartButton.tintColor = .MyBlue
         configGenre(ids: item.genre_ids ?? [])
         
     }
@@ -112,7 +107,7 @@ final class SearchTableViewCell: BaseTableViewCell {
     }
     override func configureView() {
         backgroundColor = .clear
-        heartButton.addTargetToHeartButton()
+        heartButton.setAction()
         genreStack.spacing = 5
         genreStack.axis = .horizontal
     }

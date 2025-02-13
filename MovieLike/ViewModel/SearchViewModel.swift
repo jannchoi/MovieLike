@@ -45,6 +45,7 @@ final class SearchViewModel: BaseViewModel {
         }
         
         input.fromSearchButton.lazyBind {[weak self] bool in // 돋보기 버튼으로 들어왔는지
+            print("fromSearchedButton", self?.output.isFromSearchButton.value)
             self?.output.isFromSearchButton.value = bool
         }
         input.prefetchTrigger.lazyBind {[weak self] indexPaths in // pagination을 위한 트리거

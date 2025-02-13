@@ -23,8 +23,9 @@ final class MovieDetailViewController: UIViewController {
         setDelegate()
         navigationBarDesign()
         bindData()
-
-        
+    }
+    @objc func tetetw() {
+        print("button Tapped")
     }
     private func bindData() {
         viewModel.input.synopsis.bind {[weak self] text in // 시놉시스
@@ -36,7 +37,10 @@ final class MovieDetailViewController: UIViewController {
         }
         viewModel.output.outputMovieId.bind {[weak self] id in // 영화 id가 결정되면 좋아요 상태에 따라 UI변경
             guard let id else {return}
-            self?.tabBarController?.navigationItem.setHeartButton(id)
+            let button = HeartButton(id: id)
+            button.setAction()
+            print(button.isSelected)
+            self?.tabBarController?.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
         }
         viewModel.output.backdropImage.lazyBind {[weak self] _ in // 백드롭리스트
             self?.mainView.backDropView.reloadData()
@@ -180,7 +184,6 @@ extension MovieDetailViewController: UICollectionViewDelegate, UICollectionViewD
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PosterCollectionViewCell.id, for: indexPath) as? PosterCollectionViewCell else {return UICollectionViewCell()}
             
             cell.configureData(item: viewModel.output.posterImage.value[indexPath.row])
-            
             return cell
         }
     }

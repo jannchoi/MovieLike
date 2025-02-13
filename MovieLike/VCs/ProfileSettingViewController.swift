@@ -53,7 +53,7 @@ final class ProfileSettingViewController: UIViewController {
         updateButtons()
         
     }
-    private func changeFinishButtonColor(isenabled: Bool) {
+    private func changeFinishButtonColor(isenabled: Bool) { // 완료 버튼 색깔 변경
         var color = UIColor.white
         if isenabled {
             color = .MyBlue
@@ -63,7 +63,7 @@ final class ProfileSettingViewController: UIViewController {
         mainView.finishButton.backgroundColor = color
         mainView.finishButton.layer.borderColor = color.cgColor
     }
-    private func updateButtons() {
+    private func updateButtons() { // mbti 버튼 액션 연결
         for stackview in mainView.stackViews {
             for view in stackview.arrangedSubviews {
                 guard let button = view as? UIButton else {return}
@@ -72,7 +72,7 @@ final class ProfileSettingViewController: UIViewController {
             }
         }
     }
-    @objc private func changeButtonStatus(_ sender: UIButton) {
+    @objc private func changeButtonStatus(_ sender: UIButton) { // 버튼 상태 변경
         guard let stackview = sender.superview as? UIStackView else {return}
         
         let buttons = stackview.arrangedSubviews.map{$0 as? UIButton}
@@ -89,7 +89,7 @@ final class ProfileSettingViewController: UIViewController {
         }
         changeButtonColor(buttons: buttons)
 
-        if buttons[0].isSelected || buttons[1].isSelected {
+        if buttons[0].isSelected || buttons[1].isSelected { // 상태에 따라 최종mbti버튼 리스트 업데이트
             let selected = buttons[0].isSelected ? (buttons[0].title(for: .normal), 0) : (buttons[1].title(for: .normal), 1)
             viewModel.input.selectedButtons.value[stackview.tag] = selected
 
@@ -98,7 +98,7 @@ final class ProfileSettingViewController: UIViewController {
         }
         
     }
-    private func changeButtonColor(buttons: [UIButton]) {
+    private func changeButtonColor(buttons: [UIButton]) { // mbti버튼 색깔 변경
         for button in buttons {
             if button.isSelected {
                 button.backgroundColor = .MyBlue
@@ -140,7 +140,7 @@ final class ProfileSettingViewController: UIViewController {
         }
 
     }
-    @objc func saveProfile() {
+    @objc func saveProfile() { // 닉네임 전달, 데이터 userdefaults 저장
         viewModel.input.finishButtonTrigger.value = mainView.nicknameTextField.text
         dismiss(animated: true)
     }
@@ -160,13 +160,13 @@ final class ProfileSettingViewController: UIViewController {
         mainView.updateViewLayout()
         
     }
-    override func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) { // 저장된 닉네임 textfield에 setting
         viewModel.output.preparedNickname.bind { nickname in
             self.mainView.nicknameTextField.text = nickname
         }
 
     }
-    private func setMBTIButtonStatus(list:[Int]) {
+    private func setMBTIButtonStatus(list:[Int]) { // 저장된 mbti버튼 setting
         for (idx,selected) in list.enumerated() {
             let buttons = mainView.stackViews[idx].arrangedSubviews.map{$0 as? UIButton}
             guard let buttons = buttons as? [UIButton] else {return}
@@ -174,7 +174,7 @@ final class ProfileSettingViewController: UIViewController {
             changeButtonColor(buttons: buttons)
         }
     }
-    @objc func profileImageTapped() {
+    @objc func profileImageTapped() { // 프로필 이미지뷰로 이동, 이미지 전달
         let vc = ProfileImageSettingViewController()
         vc.viewModel.input.passData.value = { data in
             if let data {

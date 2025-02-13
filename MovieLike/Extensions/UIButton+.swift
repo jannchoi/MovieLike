@@ -12,25 +12,25 @@ extension UIButton {
         self.setAttributedTitle(att, for: .normal)
     }
     
-    func setHeartButton() {
-        if UserDefaultsManager.like.contains(self.tag) {
-            self.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-        } else {
-            self.setImage(UIImage(systemName: "heart"), for: .normal)
-        }
-
-    }
-    func addTargetToHeartButton() {
-        self.addTarget(self, action: #selector(heartButtonTapped3), for: .touchUpInside)
-    }
-    @objc func heartButtonTapped3(_ sender: UIButton) {
-        if let idx = UserDefaultsManager.like.firstIndex(of: sender.tag) {
-            UserDefaultsManager.like.remove(at: idx)
-            self.setImage(UIImage(systemName: "heart"), for: .normal)
-        } else {
-            UserDefaultsManager.like.append(sender.tag)
-            self.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-        }
-    }
+//    func setHeartButton() {
+//        if UserDefaultsManager.like.contains(self.tag) {
+//            self.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+//        } else {
+//            self.setImage(UIImage(systemName: "heart"), for: .normal)
+//        }
+//
+//    }
+//    func addTargetToHeartButton() {
+//        self.addTarget(self, action: #selector(heartButtonTapped3), for: .touchUpInside)
+//    }
+//    @objc func heartButtonTapped3(_ sender: UIButton) {
+//        if let idx = UserDefaultsManager.like.firstIndex(of: sender.tag) {
+//            UserDefaultsManager.like.remove(at: idx)
+//            self.setImage(UIImage(systemName: "heart"), for: .normal)
+//        } else {
+//            UserDefaultsManager.like.append(sender.tag)
+//            self.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+//        }
+//    }
     
 }
