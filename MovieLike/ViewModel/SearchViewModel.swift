@@ -8,20 +8,21 @@
 import Foundation
 
 
-class SearchViewModel: BaseViewModel {
+final class SearchViewModel: BaseViewModel {
     private(set) var input: Input
     private(set) var output: Output
     
     struct Input {
-        var searchedTerm: Observable<String?> = Observable(nil)
-        var fromSearchButton: Observable<Bool> = Observable(false)
-        var prefetchTrigger: Observable<[IndexPath]> = Observable([])
+        var searchedTerm: Observable<String?> = Observable(nil) // 검색어
+        var fromSearchButton: Observable<Bool> = Observable(false) // 돋보기 버튼으로 들어왔는지
+        var prefetchTrigger: Observable<[IndexPath]> = Observable([]) // pagination을 위한 트리거
+        var searchedIdx: Observable<Int?> = Observable(nil) // 선택된 셀의 idx
     }
     struct Output {
         var movieList : Observable<[MovieDetail]> = Observable([])
         var errorMessage : Observable<String?> = Observable(nil)
         var isFromSearchButton: Observable<Bool> = Observable(false)
-        var searchedMovie: Observable<SearchMovie?> = Observable(nil)
+        var outputSearchedIdx: Observable<Int?> = Observable(nil)
         
         
     }
@@ -38,15 +39,19 @@ class SearchViewModel: BaseViewModel {
     }
     
     func transform() {
+        input.searchedIdx.lazyBind {[weak self] input in // cell이 선택되었을 때
+            guard let input else {return}
+            self?.output.outputSearchedIdx.value = input
+        }
         
-        input.fromSearchButton.lazyBind { bool in
-            self.output.isFromSearchButton.value = bool
+        input.fromSearchButton.lazyBind {[weak self] bool in // 돋보기 버튼으로 들어왔는지
+            self?.output.isFromSearchButton.value = bool
         }
-        input.prefetchTrigger.lazyBind { indexPaths in
-            self.checkForPrefetch()
+        input.prefetchTrigger.lazyBind {[weak self] indexPaths in // pagination을 위한 트리거
+            self?.checkForPrefetch()
         }
-        input.searchedTerm.lazyBind { _ in
-            self.searchButtonClicked()
+        input.searchedTerm.lazyBind {[weak self] _ in // 검색어가 입력되었을 때
+            self?.searchButtonClicked()
         }
         
     }

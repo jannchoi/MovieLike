@@ -19,30 +19,32 @@ final class ProfileSettingViewController: UIViewController {
         super.viewDidLoad()
         mainView.nicknameTextField.becomeFirstResponder()
         setAction()
+        print(#function, viewModel.initialImage)
         bindData()
     }
     private func bindData() {
         
-        viewModel.isEditMode.bind { editMode in
-            self.setNavigationBar(mode: editMode)
+        viewModel.isEditMode.bind {[weak self] editMode in // 초기 설정 상태인지 편집모드인지에 따라 네비게이션 제목을 다르게 설정
+            self?.setNavigationBar(mode: editMode)
         }
-        viewModel.output.preparedMBTI.bind { status in
-            self.setMBTIButtonStatus(list : status)
+        viewModel.output.preparedMBTI.bind {[weak self] status in // 편집모드일 경우 저장된 mbti에 맞게 표시
+            self?.setMBTIButtonStatus(list : status)
         }
-        viewModel.output.image.bind { img in
-            self.mainView.profileImageButton.setImage(UIImage(named: img), for: .normal)
+        viewModel.output.image.bind {[weak self] img in
+            print(img)
+            self?.mainView.profileImageButton.setImage(UIImage(named: img), for: .normal)
         }
-        viewModel.output.descriptionLabel.bind { text in
-            self.mainView.descriptionLabel.text = text
+        viewModel.output.descriptionLabel.bind {[weak self] text in // 닉네임 값이 달라질 때마다 조건 변경
+            self?.mainView.descriptionLabel.text = text
         }
-        viewModel.output.nicknameIsValid.bind { bool in
-            self.mainView.descriptionLabel.textColor = bool ? .MyBlue : .red
+        viewModel.output.nicknameIsValid.bind {[weak self] bool in // 닉네임 조건 충족 여부에 따라 조건 레이블 색 변경
+            self?.mainView.descriptionLabel.textColor = bool ? .MyBlue : .red
         }
         
-        viewModel.output.isButtonEnable.bind { bool in
-            self.mainView.finishButton.isEnabled = bool
-            self.changeFinishButtonColor(isenabled: bool)
-            self.navigationItem.rightBarButtonItem?.isEnabled = bool
+        viewModel.output.isButtonEnable.bind {[weak self] bool in // 닉네임, mbti의 조건 충족 여부에 따라 완료버튼, 저장 버튼 enable 상태 변경
+            self?.mainView.finishButton.isEnabled = bool
+            self?.changeFinishButtonColor(isenabled: bool)
+            self?.navigationItem.rightBarButtonItem?.isEnabled = bool
         }
         
     }

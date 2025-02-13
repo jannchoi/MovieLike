@@ -14,7 +14,7 @@ final class CinemaView: BaseView {
     private let searchLabel = UILabel()
     let noSearchedWord = UILabel()
     let deleteButton = UIButton()
-    lazy var searchedWords = UICollectionView(frame: .zero, collectionViewLayout: searchedWordsLayout())
+    lazy var searchedWords = UICollectionView(frame: .zero, collectionViewLayout: searchedWordsLayout()) // 최근 검색어 : CollectionView
     private let movieLabel = UILabel()
     lazy var movieCollection = UICollectionView(frame: .zero, collectionViewLayout: movieLayout())
     

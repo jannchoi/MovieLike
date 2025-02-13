@@ -13,7 +13,7 @@ final class MovieDetailView: BaseView {
     lazy var backDropView = UICollectionView(frame: .zero, collectionViewLayout: backDropLayout())
     let pager = UIPageControl()
     private let pagerBackView = UIView()
-    let infoStackView = UIStackView()
+    let infoStackView = UIStackView() // 영화 정보 : stackview(button)
     let dateLabel = UIButton()
     let rateLabel = UIButton()
     let genreLabel = UIButton()

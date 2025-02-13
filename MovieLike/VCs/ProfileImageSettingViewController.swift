@@ -17,17 +17,17 @@ final class ProfileImageSettingViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setDelegate()
-        viewModel.input.settingImageTrigger.value = ()
+        
     
         bindData()
     }
     private func bindData() {
-        viewModel.isEditMode.bind { editMode in
-            self.setNavigationBar(mode: editMode)
+        viewModel.isEditMode.bind {[weak self] editMode in // 초기 설정인지 편집상태인지에 따라 상단 바 제목 변경
+            self?.setNavigationBar(mode: editMode)
         }
-        viewModel.output.selectedItem.bind { num in
+        viewModel.output.selectedItem.bind {[weak self] num in // 이미지를 선택할 때마다 메인 이미지 변경
             guard let num else {return}
-            self.mainView.selectedImage.image = UIImage(named: "profile_\(num)")
+            self?.mainView.selectedImage.image = UIImage(named: "profile_\(num)")
         }
     }
     

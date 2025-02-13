@@ -29,35 +29,39 @@ final class SearchViewController: UIViewController {
     
     private func bindData() {
 
-        viewModel.output.movieList.lazyBind { _ in
-            if self.viewModel.isResultEmpty {
-                self.mainView.noSearchLabel.isHidden = false
-                self.mainView.tableView.isHidden = true
+        viewModel.output.movieList.lazyBind { [weak self] _ in // 검색어를 통해 영화 리스트를 불러왔을 때
+            if ((self?.viewModel.isResultEmpty) != nil) { // 비어있으면 '검색어 없음'을 표시
+                self?.mainView.noSearchLabel.isHidden = false
+                self?.mainView.tableView.isHidden = true
                 return
             }
             else {
-                self.mainView.noSearchLabel.isHidden = true
-                self.mainView.tableView.isHidden = false
+                self?.mainView.noSearchLabel.isHidden = true
+                self?.mainView.tableView.isHidden = false
             }
-            self.mainView.tableView.showSkeleton()
+            self?.mainView.tableView.showSkeleton()
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.mainView.tableView.reloadData()
-                self.mainView.tableView.hideSkeleton()
+                self?.mainView.tableView.reloadData()
+                self?.mainView.tableView.hideSkeleton()
             }
             
         }
-        viewModel.output.errorMessage.lazyBind { message in
+        viewModel.output.errorMessage.lazyBind { [weak self] message in // 에러가 났을 때
             guard let message else {return}
-            self.showAlert(title: "Error", text: message, button: nil)
+            self?.showAlert(title: "Error", text: message, button: nil)
         }
+
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.output.isFromSearchButton.bind { Bool in
-            self.setFirstUI(bool: Bool)
+        viewModel.output.isFromSearchButton.bind { [weak self] Bool in // 돋보기 버튼을 통해 들어왔는지 여부를 통해 테이블을 보여줄 지 레이블을 보여줄 지
+            self?.setFirstUI(bool: Bool)
         }
         navigationBarDesign()
-        mainView.tableView.reloadData()
+        viewModel.output.outputSearchedIdx.bind { [weak self] idx in // 선택된 셀의 인덱스를 받아서 해당 row를 reload
+            guard let idx else {return}
+            self?.mainView.tableView.reloadRows(at: [IndexPath(row: idx, section: 0)], with: .none)
+        }
 
     }
     override func viewWillDisappear(_ animated: Bool) {
@@ -136,6 +140,7 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
         return 120
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        viewModel.input.searchedIdx.value = indexPath.row
         let vc = MovieDetailViewController()
         let item = viewModel.output.movieList.value[indexPath.row]
         vc.viewModel.input.movieId.value = item.id

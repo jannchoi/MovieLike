@@ -40,16 +40,16 @@ final class ProfileSettingViewModel: BaseViewModel {
     func transform() {
         setSavedProfile()
         
-        input.finishButtonTrigger.lazyBind { _ in
-            self.saveData()
+        input.finishButtonTrigger.lazyBind {[weak self] _ in // 완료 버튼을 눌렀을 때
+            self?.saveData()
         }
-        input.nickname.lazyBind { _ in
-            self.isValidNickname()
-            self.checkIsButtonEnable()
+        input.nickname.lazyBind {[weak self] _ in // 닉네임이 변경되었을 때
+            self?.isValidNickname()
+            self?.checkIsButtonEnable()
         }
-        input.selectedButtons.lazyBind { _ in
-            self.checkMbtiIsValid()
-            self.checkIsButtonEnable()
+        input.selectedButtons.lazyBind {[weak self] _ in // mbti 선택이 변경되었을 때
+            self?.checkMbtiIsValid()
+            self?.checkIsButtonEnable()
         }
     }
     private func setSavedProfile() {
@@ -80,7 +80,8 @@ final class ProfileSettingViewModel: BaseViewModel {
         isValidNickname()
     }
     private func setProfileImage() {
-        if initialImage != UserDefaultsManager.profileImage && UserDefaultsManager.profileImage != 0 {
+        print(#function, initialImage)
+        if UserDefaultsManager.profileImage == 12 {
             output.image.value = "profile_\(initialImage)"
         } else {
             initialImage = UserDefaultsManager.profileImage

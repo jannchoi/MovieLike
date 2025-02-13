@@ -12,7 +12,6 @@ final class ProfileImageSettingViewModel: BaseViewModel {
     private(set) var output: Output
     
     struct Input {
-        var settingImageTrigger: Observable<Void?> = Observable(nil)
         var passData: Observable<((Int?) -> (Int?))?> = Observable(nil)
         var didSelectedItemIndex: Observable<Int?> = Observable(nil)
     }
@@ -27,7 +26,7 @@ final class ProfileImageSettingViewModel: BaseViewModel {
         transform()
     }
     func transform() {
-        input.settingImageTrigger.lazyBind { [weak self] _ in
+        input.passData.bind { [weak self] _ in
             self?.setInitialImage()
         }
         input.didSelectedItemIndex.lazyBind { [weak self] idx in

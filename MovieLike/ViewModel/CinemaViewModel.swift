@@ -6,7 +6,7 @@
 //
 
 import Foundation
-class CinemaViewModel: BaseViewModel {
+final class CinemaViewModel: BaseViewModel {
     private(set) var input: Input
     private(set) var output: Output
     
@@ -29,24 +29,22 @@ class CinemaViewModel: BaseViewModel {
         output = Output()
         transform()    }
     func transform() {
-        self.output.movieList.bind { _ in
-            self.loadData()
+        loadData()
+        self.input.resetSearchedTermTapped.lazyBind { [weak self] _ in // 검색어 삭제 버튼을 눌렀을 때
+            self?.resetSearchedTerm()
+            self?.switchSearchedTermView()
         }
-        self.input.resetSearchedTermTapped.lazyBind { _ in
-            self.resetSearchedTerm()
-            self.switchSearchedTermView()
+        self.input.updateSearchedTerm.bind { [weak self] _ in // userdefault의 검색어가 변경되면 뷰모델 내부 프로퍼티도 업데이트
+            self?.userdefaultsSearchedTerm.value = UserDefaultsManager.searchedTerm
+            self?.switchSearchedTermView()
         }
-        self.input.updateSearchedTerm.bind { _ in
-            self.userdefaultsSearchedTerm.value = UserDefaultsManager.searchedTerm
-            self.switchSearchedTermView()
+        userdefaultsSearchedTerm.bind { [weak self] _ in // 검색어가 비어있는지 상태 여부
+            self?.switchSearchedTermView()
         }
-        userdefaultsSearchedTerm.bind { _ in
-            self.switchSearchedTermView()
-        }
-        input.deleteSearchedTerm.lazyBind { target in
+        input.deleteSearchedTerm.lazyBind { [weak self] target in // 검색어가 삭제될 때 userdefault와 내부 프로퍼티 업데이트
             guard let target else {return}
             UserDefaultsManager.searchedTerm.remove(at: target)
-            self.userdefaultsSearchedTerm.value = UserDefaultsManager.searchedTerm
+            self?.input.updateSearchedTerm.value = ()
         }
     }
     private func resetSearchedTerm() {

@@ -34,9 +34,9 @@ final class MovieDetailViewModel: BaseViewModel {
     }
     
     func transform() {
-        input.movieId.lazyBind { _ in
-            self.output.outputMovieId.value = self.input.movieId.value
-            self.callRequest()
+        input.movieId.lazyBind {[weak self] _ in // 영화 ID를 받으면 vc로 전달, 네트워크 통신
+            self?.output.outputMovieId.value = self?.input.movieId.value
+            self?.callRequest()
         }
     }
     private func callRequest() {

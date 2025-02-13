@@ -27,16 +27,16 @@ final class CinemaViewController: UIViewController {
     }
     
     private func bindData() {
-        viewModel.output.movieList.lazyBind { _ in
-            self.mainView.movieCollection.reloadData()
+        viewModel.output.movieList.lazyBind {[weak self] _ in // 추천 영화 리스트
+            self?.mainView.movieCollection.reloadData()
         }
-        viewModel.output.errorMessage.lazyBind { message in
+        viewModel.output.errorMessage.lazyBind {[weak self] message in
             if let message {
-                self.showAlert(title: "Error", text: message, button: nil)
+                self?.showAlert(title: "Error", text: message, button: nil)
             }
         }
-        viewModel.output.isShowSearchedWords.lazyBind { bool in
-            self.switchSearchedTermView(isShowTable: bool)
+        viewModel.output.isShowSearchedWords.lazyBind {[weak self] bool in // 최근 검색어가 비어있는지에 따라 레이블과 컬렉션뷰 토클
+            self?.switchSearchedTermView(isShowTable: bool)
             
         }
     }

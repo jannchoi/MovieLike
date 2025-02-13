@@ -31,7 +31,7 @@ enum UserDefaultsManager {
     static var used
     @MyDefaults(key: Key.nickname.rawValue, empty: "None")
     static var nickname
-    @MyDefaults(key: Key.profileImage.rawValue, empty: 0)
+    @MyDefaults(key: Key.profileImage.rawValue, empty: 12)
     static var profileImage
     @MyDefaults(key: Key.signDate.rawValue, empty: "None")
     static var signDate

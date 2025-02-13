@@ -87,6 +87,7 @@ class ProfileBaseView: BaseView {
     }
     
     func updateProfile() {
+        print("profileView",#function, UserDefaultsManager.profileImage)
         profileImage.image = UIImage(named: "profile_\(UserDefaultsManager.profileImage)")
         nickname.text = UserDefaultsManager.nickname
         dateLabel.text = UserDefaultsManager.signDate + " 가입"

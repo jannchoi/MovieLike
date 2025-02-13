@@ -27,48 +27,48 @@ final class MovieDetailViewController: UIViewController {
         
     }
     private func bindData() {
-        viewModel.input.synopsis.bind { text in
-            self.mainView.synopsisShort.text = text
-            self.mainView.synopsisLong.text = text
+        viewModel.input.synopsis.bind {[weak self] text in // 시놉시스
+            self?.mainView.synopsisShort.text = text
+            self?.mainView.synopsisLong.text = text
         }
-        viewModel.input.movieTitle.bind { title in
-            self.tabBarController?.navigationItem.title = title
+        viewModel.input.movieTitle.bind {[weak self] title in // 영화 제목이 결정되면 상단 바 제목 결정
+            self?.tabBarController?.navigationItem.title = title
         }
-        viewModel.output.outputMovieId.bind { id in
+        viewModel.output.outputMovieId.bind {[weak self] id in // 영화 id가 결정되면 좋아요 상태에 따라 UI변경
             guard let id else {return}
-            self.tabBarController?.navigationItem.setHeartButton(id)
+            self?.tabBarController?.navigationItem.setHeartButton(id)
         }
-        viewModel.output.backdropImage.lazyBind { _ in
-            self.mainView.backDropView.reloadData()
+        viewModel.output.backdropImage.lazyBind {[weak self] _ in // 백드롭리스트
+            self?.mainView.backDropView.reloadData()
         }
-        viewModel.output.posterImage.lazyBind { _ in
-            self.mainView.posterView.reloadData()
+        viewModel.output.posterImage.lazyBind {[weak self] _ in // 포스터리스트
+            self?.mainView.posterView.reloadData()
         }
-        viewModel.output.errorMessage.lazyBind { message in
-            self.showAlert(title: "ERROR", text: message, button: nil)
+        viewModel.output.errorMessage.lazyBind {[weak self] message in
+            self?.showAlert(title: "ERROR", text: message, button: nil)
         }
-        viewModel.output.castList.lazyBind { _ in
-            self.mainView.castView.reloadData()
+        viewModel.output.castList.lazyBind {[weak self] _ in // 캐스트리스트
+            self?.mainView.castView.reloadData()
         }
         setInfoLabel()
     }
     private func setInfoLabel() {
-        viewModel.input.releaseDate.bind { releasedate in
-            guard let date = self.mainView.infoStackView.arrangedSubviews[0] as? UIButton else {return}
+        viewModel.input.releaseDate.bind {[weak self] releasedate in
+            guard let date = self?.mainView.infoStackView.arrangedSubviews[0] as? UIButton else {return}
             date.setButtonTitle(title: (releasedate) + "   | ", color: UIColor.MyGray, size: 12)
             date.setImage(UIImage(systemName: "calendar"), for: .normal)
             date.tintColor = .MyGray
             date.isUserInteractionEnabled = false
         }
-        viewModel.input.rate.bind { rate in
-            guard let tempRate = self.mainView.infoStackView.arrangedSubviews[1] as? UIButton else {return}
+        viewModel.input.rate.bind {[weak self] rate in
+            guard let tempRate = self?.mainView.infoStackView.arrangedSubviews[1] as? UIButton else {return}
             tempRate.setButtonTitle(title: (rate) + "   | ", color: UIColor.MyGray, size: 12)
             tempRate.setImage(UIImage(systemName: "star.fill"), for: .normal)
             tempRate.tintColor = .MyGray
             tempRate.isUserInteractionEnabled = false
         }
-        viewModel.input.genre.bind { list in
-            guard let tempGenre = self.mainView.infoStackView.arrangedSubviews[2] as? UIButton else {return}
+        viewModel.input.genre.bind {[weak self] list in
+            guard let tempGenre = self?.mainView.infoStackView.arrangedSubviews[2] as? UIButton else {return}
             var genretotal = [String]()
 
             if let list, list.count > 0 {
